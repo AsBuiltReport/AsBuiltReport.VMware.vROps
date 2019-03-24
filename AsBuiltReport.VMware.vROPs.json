@@ -1,0 +1,25 @@
+{
+    "Report": {
+        "Name": "vRealize Operations Manager As Built Documentation",
+        "Version": "1.0",
+        "Status": "Released"
+    },
+    "Options": {
+        "AuthSource": "local",
+        "AlertFilter": "*"
+    },
+    "HealthCheck": {},
+    "InfoLevel": {
+        "_comment_": "0 = Disabled, 1 = Summary, 2 = Informative, 3 = Detailed, 4 = Adv Detailed, 5 = Comprehensive",
+        "Authentication": 2,
+        "Roles": 2,
+        "Groups": 2,
+        "Users": 2,
+        "Adapters": 2,
+        "RemoteCollectors": 2,
+        "Alerts": 2,
+        "SuperMetrics": 2,
+        "ServiceStatus": 2,
+        "CustomGroups": 2
+    }
+}
