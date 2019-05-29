@@ -24,16 +24,29 @@ function Invoke-AsBuiltReport.VMware.vROPs {
     #                                    CONFIG SETTINGS                                          #
     ###############################################################################################
 
+    param (
+        [String[]] $Target,
+        [String]$StylePath,
+        [String] $Username,
+        [String] $Password,
+        [PSCredential] $Credential
+ 
+    )
+
+    # Import JSON Configuration for Options and InfoLevel
+    $InfoLevel = $ReportConfig.InfoLevel
+    $Options = $ReportConfig.Options
+
+    $Options
+
     # If custom style not set, use vROPs style
     if (!$StyleName) {
-        & "$PSScriptRoot\..\..\Styles\VMware.ps1"
+        & "$PSScriptRoot\..\..\AsBuiltReport.VMware.vROPs.Style.ps1"
     }
-
 
         # Connect to vROPs using supplied credentials
         foreach ($vropshost in $Target) {
-        $token = acquireToken -resthost $vropshost -username $username -password $password -authSource $options.authsource
-        
+        #$token = acquireToken -resthost $vropshost -cr -authSource local
         #endregion Configuration Settings
 
         #region Script Body
@@ -44,7 +57,7 @@ function Invoke-AsBuiltReport.VMware.vROPs {
 
         if ($InfoLevel.Authentication -ge 1) {
             Section -Style Heading1 -Name 'Authentication' {
-                $AuthSources = $(getAuthSources -resthost $vropshost -token $token).sources
+                $AuthSources = $(getAuthSources -resthost $vropshost -credential $Credential).sources
                 if ($AuthSources) {
                     Section -Style Heading2 -Name 'AD Auth Sources' {
                         $AuthSources = $AuthSources | where {$_.sourcetype.name -like '*ACTIVE_DIRECTORY*'} | select-object @{l = 'Name'; e = {$_.name}}, @{l = 'ID'; e = {$_.ID}}
@@ -56,7 +69,7 @@ function Invoke-AsBuiltReport.VMware.vROPs {
 
         if ($InfoLevel.Roles -ge 1) {
             Section -Style Heading1 -Name 'Roles' {
-                $roles = $(getRoles -resthost $vropshost -token $token).userRoles
+                $roles = $(getRoles -resthost $vropshost -credential $Credential).userRoles
                 if ($roles) {
 
                     Section -Style Heading2 -Name 'System Roles' {
@@ -72,8 +85,8 @@ function Invoke-AsBuiltReport.VMware.vROPs {
             }
         }
         if ($InfoLevel.Groups -ge 1) {
-            $users = $(getUsers -resthost $vropshost -token $token).users
-            $groups = $(getUserGroups -resthost $vropshost -token $token).userGroups
+            $users = $(getUsers -resthost $vropshost -credential $Credential).users
+            $groups = $(getUserGroups -resthost $vropshost -credential $Credential).userGroups
 
             Section -Style Heading1 -Name 'Groups' {
                 if ($groups) {
@@ -132,7 +145,7 @@ function Invoke-AsBuiltReport.VMware.vROPs {
 
         if ($InfoLevel.ServiceStatus -ge 1) {
             Section -Style Heading1 -Name 'Service Status' {
-                $serviceStatus = $(getServicesInfo -resthost $vropshost -token $token).service
+                $serviceStatus = $(getServicesInfo -resthost $vropshost -credential $Credential).service
                 if ($serviceStatus) {
                     $serviceStatus = $serviceStatus |  select-object @{l = 'Name'; e = {$_.name}}, @{l = 'Health'; e = {$_.Health}}, @{l = 'Details'; e = {$_.details}}
                     $serviceStatus | Table -List -ColumnWidths 25, 75
@@ -142,7 +155,7 @@ function Invoke-AsBuiltReport.VMware.vROPs {
 
         if ($InfoLevel.RemoteCollectors -ge 1) {
             Section -Style Heading1 -Name 'Remote Collectors' {
-                $collectors= $(getCollectors -resthost $vropshost -token $token).collector
+                $collectors= $(getCollectors -resthost $vropshost -credential $Credential).collector
                 $localNodes = $collectors  | where {$_.local -like '*True*'}
                 $remoteCollectors = $collectors  | where {$_.local -like '*False*'}
 
@@ -163,7 +176,7 @@ function Invoke-AsBuiltReport.VMware.vROPs {
         }
 
         if ($InfoLevel.RemoteCollectors -ge 1) {
-            $collectorGroups= $(getCollectorGroups -resthost $vropshost -token $token).collectorGroups
+            $collectorGroups= $(getCollectorGroups -resthost $vropshost -credential $Credential).collectorGroups
             if ($collectorGroups) {
                 Section -Style Heading2 -Name 'Remote Collector Groups' {
                     foreach ($rcGroup in $collectorGroups) {
@@ -174,7 +187,7 @@ function Invoke-AsBuiltReport.VMware.vROPs {
                             if ($InfoLevel.RemoteCollectors -ge 2) {
                                 Section -Style Heading4 -Name "Group Members" {
                                     foreach ($rcId in $($rcGroup).collectorId) {
-                                        $rcNames = $(getCollectors -resthost $vropshost -token $token).collector | where {$_.id -like $rcId}
+                                        $rcNames = $(getCollectors -resthost $vropshost -credential $Credential).collector | where {$_.id -like $rcId}
                                         $rcNames = $rcNames | Select-Object @{l = 'Name'; e = {$_.name}},@{l = 'Hostname'; e = {$_.hostName}}
                                         $rcNames | Table -List -ColumnWidths 25, 75
                                         BlankLine
@@ -189,8 +202,8 @@ function Invoke-AsBuiltReport.VMware.vROPs {
 
         if ($InfoLevel.Adapters -ge 1) {
             Section -Style Heading1 -Name 'Adapters' {
-                $AdapterInstance = $(getAdapterInstances -resthost $vropshost -token $token).adapterInstancesInfoDto 
-                $collectors= $(getCollectors -resthost $vropshost -token $token).collector
+                $AdapterInstance = $(getAdapterInstances -resthost $vropshost -credential $Credential).adapterInstancesInfoDto 
+                $collectors= $(getCollectors -resthost $vropshost -credential $Credential).collector
                 if ($AdapterInstance) {
                     foreach ($adapterKind in $AdapterInstance.resourcekey.adapterKindKey | sort -Unique) {
                         Section -Style Heading2 -Name "$adapterKind" {
@@ -209,7 +222,7 @@ function Invoke-AsBuiltReport.VMware.vROPs {
         }
 
         if ($InfoLevel.Alerts -ge 1) {
-            $alerts = $(getAlertDefinitions -resthost $vropshost -token $token).alertDefinitions | where {$_.name -like "*$($Options.AlertFilter)*"}
+            $alerts = $(getAlertDefinitions -resthost $vropshost -credential $Credential).alertDefinitions | where {$_.name -like "*$($Options.AlertFilter)*"}
             if ($alerts) {
                 Section -Style Heading1 -Name 'Alerts' {
                     foreach ($a in $alerts){
@@ -221,7 +234,7 @@ function Invoke-AsBuiltReport.VMware.vROPs {
                                 $symp = $a.states.'base-symptom-set'.symptomDefinitionIds
                                 foreach ($s in $symp) {
                                     $sympHashTable = @()
-                                    $symDef = $(getSymptomDefinitions -resthost $vropshost -token $token -symptomdefinitionid $s).symptomDefinitions
+                                    $symDef = $(getSymptomDefinitions -resthost $vropshost -credential $Credential -symptomdefinitionid $s).symptomDefinitions
                                     if ($symDef.state.condition.type -contains 'CONDITION_MESSAGE_EVENT' ) {
                                         Section -Style Heading3 -Name "Symptom: $($symDef.name)" {
 
@@ -342,7 +355,7 @@ function Invoke-AsBuiltReport.VMware.vROPs {
 
         if ($InfoLevel.SuperMetrics -ge 1) {
                 Section -Style Heading1 -Name 'Super Metrics' {
-                $superMetrics = $(getSuperMetrics -resthost $vropshost -token $token).supermetrics
+                $superMetrics = $(getSuperMetrics -resthost $vropshost -credential $Credential).supermetrics
                 if ($superMetrics) {
                     $superMetrics = $superMetrics |  select-object @{l = 'Name'; e = {$_.name}}, @{l = 'ID'; e = {$_.ID}}, @{l = 'Formula'; e = {$_.formula}}
                     $superMetrics | Table -List -ColumnWidths 25, 75
@@ -352,7 +365,7 @@ function Invoke-AsBuiltReport.VMware.vROPs {
 
         if ($InfoLevel.CustomGroups -ge 1) {
             Section -Style Heading1 -Name 'Custom Groups' {
-                $customGroups = $(getCustomGroups -resthost $vropshost -token $token).values.resourceKey
+                $customGroups = $(getCustomGroups -resthost $vropshost -credential $Credential).values.resourceKey
                 if ($customGroups) {
                     $customGroups = $customGroups |  select-object @{l = 'Name'; e = {$_.name}}, @{l = 'Adapter Kind'; e = {$_.adapterKindKey}}, @{l = 'Resource Kind'; e = {$_.resourceKindKey}}
                     $customGroups | Table -List -ColumnWidths 25, 75
