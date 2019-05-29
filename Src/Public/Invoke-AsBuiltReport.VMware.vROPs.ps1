@@ -1,4 +1,3 @@
-#requires -Modules @{ModuleName="PScribo";ModuleVersion="0.7.23"},PowervROPs
 function Invoke-AsBuiltReport.VMware.vROPs {
     <#
     .SYNOPSIS  
