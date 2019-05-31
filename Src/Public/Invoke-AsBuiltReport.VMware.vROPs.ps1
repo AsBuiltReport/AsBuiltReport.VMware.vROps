@@ -161,14 +161,14 @@ function Invoke-AsBuiltReport.VMware.vROPs {
 
                 if ($localNodes) {
                     Section -Style Heading2 -Name 'Local Nodes' {
-                        $localNodes = $localNodes | sort-object ID | select-object @{l = 'Name'; e = {$_.name}},@{l = 'ID'; e = {$_.id}},  @{l = 'State'; e = {$_.State}}, @{l = 'Hostname'; e = {$_.hostname}}
+                        $localNodes = $localNodes | sort-object ID | select-object @{l = 'Name'; e = {$_.name}},@{l = 'ID'; e = {$_.id}},  @{l = 'State'; e = {$_.State}}, @{l = 'Hostname'; e = {$_.hostname}}, @{l = 'Last Heartbeat'; e = {(convertEpoch -epochTime $_.lastHeartbeat)}}
                         $localNodes | Table -List -ColumnWidths 25, 75
                     }
                 }
 
                 if ($remoteCollectors) {
                     Section -Style Heading2 -Name 'Remote Collectors' {
-                        $remoteCollectors = $remoteCollectors | sort-object ID | select-object @{l = 'Name'; e = {$_.name}},@{l = 'ID'; e = {$_.id}},  @{l = 'State'; e = {$_.State}}, @{l = 'Hostname'; e = {$_.hostname}}
+                        $remoteCollectors = $remoteCollectors | sort-object ID | select-object @{l = 'Name'; e = {$_.name}},@{l = 'ID'; e = {$_.id}},  @{l = 'State'; e = {$_.State}}, @{l = 'Hostname'; e = {$_.hostname}}, @{l = 'Last Heartbeat'; e = {(convertEpoch -epochTime $_.lastHeartbeat)}}
                         $remoteCollectors | Table -List -ColumnWidths 25, 75
                     }
                 }
@@ -211,7 +211,7 @@ function Invoke-AsBuiltReport.VMware.vROPs {
 
                             foreach ($adapter in $AdapterInstances) {
                                 $rc = $collectors | where {$_.id -like $adapter.collectorId}
-                                $adapter = $adapter | select-object @{l = 'Name'; e = {$_.resourceKey.name}}, @{l = 'Resource Kind'; e = {$_.resourceKey.resourceKindKey}}, @{l = 'Description'; e = {$_.description}}, @{l = 'Message from Adapter'; e = {$_.messageFromAdapterInstance}}, @{l = 'Collector Node'; e = {$rc.name}}
+                                $adapter = $adapter | select-object @{l = 'Name'; e = {$_.resourceKey.name}}, @{l = 'Resource Kind'; e = {$_.resourceKey.resourceKindKey}}, @{l = 'Description'; e = {$_.description}}, @{l = 'Message from Adapter'; e = {$_.messageFromAdapterInstance}}, @{l = 'Collector Node'; e = {$rc.name}}, @{l = 'Last Heartbeat'; e = {(convertEpoch -epochTime $_.lastHeartbeat)}}, @{l = 'Last Collected'; e = {(convertEpoch -epochTime $_.lastCollected)}}, @{l = 'Metrics Collected'; e = {$_.numberOfMetricsCollected}}, @{l = 'Resources Collected'; e = {$_.numberOfResourcesCollected}} 
                                 $adapter | Table -List -ColumnWidths 25, 75
                                 BlankLine
                             }
@@ -365,14 +365,13 @@ function Invoke-AsBuiltReport.VMware.vROPs {
 
         if ($InfoLevel.CustomGroups -ge 1) {
             Section -Style Heading1 -Name 'Custom Groups' {
-                $customGroups = $(getCustomGroups -resthost $vropshost -credential $Credential).values.resourceKey
+                $customGroups = $(getCustomGroups -resthost $vropshost -credential $Credential).values
                 if ($customGroups) {
-                    $customGroups = $customGroups |  select-object @{l = 'Name'; e = {$_.name}}, @{l = 'Adapter Kind'; e = {$_.adapterKindKey}}, @{l = 'Resource Kind'; e = {$_.resourceKindKey}}
-                    $customGroups | Table -List -ColumnWidths 25, 75
+                    $customGroupTbl = $customGroups |  select-object @{l = 'Name'; e = {$_.resourceKey.name}}, @{l = 'Adapter Kind'; e = {$_.resourceKey.adapterKindKey}}, @{l = 'Resource Kind'; e = {$_.resourceKey.resourceKindKey}}
+                    $customGroupTbl | Table -List -ColumnWidths 25, 75
                 }
             }
         }
-
         #endregion Script Body
     }
 }
