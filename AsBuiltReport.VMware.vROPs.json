@@ -20,6 +20,8 @@
         "Alerts": 2,
         "SuperMetrics": 2,
         "ServiceStatus": 2,
-        "CustomGroups": 2
+        "CustomGroups": 2,
+        "Reports": 2,
+        "GlobalSettings": 1
     }
 }
