@@ -11,15 +11,15 @@
     "HealthCheck": {},
     "InfoLevel": {
         "_comment_": "0 = Disabled, 1 = Summary, 2 = Informative, 3 = Detailed, 4 = Adv Detailed, 5 = Comprehensive",
-        "Authentication": 2,
-        "Roles": 2,
-        "Groups": 2,
-        "Users": 2,
-        "Adapters": 2,
-        "RemoteCollectors": 2,
-        "Alerts": 2,
-        "SuperMetrics": 2,
-        "ServiceStatus": 2,
-        "CustomGroups": 2
+        "Authentication": 3,
+        "Roles": 3,
+        "Groups": 3,
+        "Users": 3,
+        "Adapters": 3,
+        "RemoteCollectors": 3,
+        "Alerts": 3,
+        "SuperMetrics": 3,
+        "ServiceStatus": 3,
+        "CustomGroups": 3
     }
 }
