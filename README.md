@@ -69,6 +69,7 @@ The **InfoLevel** sub-schema allows configuration of each section of the report 
 | InfoLevel | Adapters | 3
 | InfoLevel | RemoteCollectors | 3
 | InfoLevel | Alerts | 3
+| InfoLevel | Symptoms | 3
 | InfoLevel | SuperMetrics | 3
 | InfoLevel | ServiceStatus | 3
 | InfoLevel | CustomGroups | 3
@@ -123,6 +124,3 @@ New-AsBuiltReport -Target 'vrops-01.corp.local' -Username 'admin' -Password 'VMw
 
 ### Custom Groups Configuration Table
 ![](Sample/2019-06-12-21-09-39.png)
-
-## Known Issues
-None yet... :)
