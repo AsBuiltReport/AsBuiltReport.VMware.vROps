@@ -117,10 +117,10 @@ New-AsBuiltReport -Target 'vrops-01.corp.local' -Username 'admin' -Password 'VMw
 ![Authentication Configuration](Samples/2019-06-12-21-03-25.png)
 
 ### Alert & Symptom Configuration Table
-![](Sample/2019-06-12-21-07-26.png)
+![](Samples/2019-06-12-21-07-26.png)
 
 ### Super Metric Configuration Table
-![](Sample/2019-06-12-21-08-48.png)
+![](Samples/2019-06-12-21-08-48.png)
 
 ### Custom Groups Configuration Table
-![](Sample/2019-06-12-21-09-39.png)
+![](Samples/2019-06-12-21-09-39.png)
