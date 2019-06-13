@@ -81,7 +81,7 @@ The **InfoLevel** sub-schema allows configuration of each section of the report 
 | InfoLevel | ServiceStatus | 3
 | InfoLevel | CustomGroups | 3
 
-There are 6 levels (0-5) of detail granularity for each section as follows;
+There are 4 levels (0-3) of detail granularity for each section as follows;
 
 | Setting | InfoLevel | Description |
 | ------- | ---- | ----------- |
