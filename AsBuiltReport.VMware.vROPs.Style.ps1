@@ -1,7 +1,7 @@
 # VMware Default Document Style
 
 # Configure document options
-DocumentOption -EnableSectionNumbering -PageSize A4 -DefaultFont 'Century Gothic' -MarginLeftAndRight 71 -MarginTopAndBottom 71 -Orientation $Orientation
+DocumentOption -EnableSectionNumbering -PageSize A4 -DefaultFont 'Arial' -MarginLeftAndRight 71 -MarginTopAndBottom 71 -Orientation $Orientation
 
 # Configure Heading and Font Styles
 Style -Name 'Title' -Size 24 -Color '485969' -Align Center
