@@ -40,7 +40,8 @@ function Invoke-AsBuiltReport.VMware.vROps {
     # If custom style not set, use vROps style
     if (!$StyleName) {
         & "$PSScriptRoot\..\..\AsBuiltReport.VMware.vROps.Style.ps1"
-    }  
+    }
+    #endregion Configuration Settings
 
     #region Script Body
     ###############################################################################################
@@ -391,7 +392,7 @@ function Invoke-AsBuiltReport.VMware.vROps {
                 }
             }
             #endregion Reports
-        }
-        #endregion Script Body
+        }       
     }
+    #endregion Script Body
 }
