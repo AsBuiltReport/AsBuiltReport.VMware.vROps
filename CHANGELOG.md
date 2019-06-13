@@ -1,7 +1,6 @@
-# VMware vROPs As Built Report Changelog
+# VMware vROps As Built Report Changelog
 
-## 0.1.0
-### What's New
-
+## 1.0.0
+### Added
 - Initial build of vROPs As Built Report.
 - Refactored code into new module.
