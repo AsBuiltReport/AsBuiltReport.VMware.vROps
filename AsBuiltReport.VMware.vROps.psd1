@@ -15,7 +15,7 @@ RootModule = 'AsBuiltReport.VMware.vROps.psm1'
 ModuleVersion = '1.0.0'
 
 # Supported PSEditions
-# CompatiblePSEditions = @()
+CompatiblePSEditions = 'Desktop'
 
 # ID used to uniquely identify this module
 GUID = '1e32cd0d-e251-4bf6-994d-a14c5ee1115d'
@@ -33,7 +33,7 @@ Copyright = '(c) 2019 Tim Williams. All rights reserved.'
 Description = 'A PowerShell module to generate an as built report on the configuration of VMware vRealize Operations (vROps).'
 
 # Minimum version of the Windows PowerShell engine required by this module
-# PowerShellVersion = ''
+PowerShellVersion = '5.1'
 
 # Name of the Windows PowerShell host required by this module
 # PowerShellHostName = ''
@@ -51,7 +51,7 @@ Description = 'A PowerShell module to generate an as built report on the configu
 # ProcessorArchitecture = ''
 
 # Modules that must be imported into the global environment prior to importing this module
-# RequiredModules = @()
+RequiredModules = @('AsBuiltReport.Core')
 
 # Assemblies that must be loaded prior to importing this module
 # RequiredAssemblies = @()
