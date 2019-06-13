@@ -1,10 +1,10 @@
 # VMware vROps As Built Report
 
 # Getting Started
-Below are the instructions on how to install, configure and generate a VMware vSphere As Built report.
+Below are the instructions on how to install, configure and generate a VMware vROps As Built report.
 
 ## Pre-requisites
-The following PowerShell modules are required for generating a VMware vSphere As Built report.
+The following PowerShell modules are required for generating a VMware vROps As Built report.
 
 Each of these modules can be easily downloaded and installed via the PowerShell Gallery 
 
@@ -30,7 +30,7 @@ import-module \PowervROps\PowervROPs.psm1
 
 ### Required Privileges
 
-To generate a VMware vSphere report, a user account with Read-Only rights to all objects within vROps. Ideally a Local User Account is used.
+To generate a VMware vROps report, a user account with Read-Only rights to all objects within vROps. Ideally a Local User Account is used.
 
 ## Configuration
 The vROps As Built Report utilises a JSON file to allow configuration of report information, options, detail and healthchecks. 
@@ -97,29 +97,29 @@ The **Healthcheck** sub-schema is used to toggle health checks on or off. Curren
 
 ## Examples 
 - Generate HTML & Word reports with Timestamp
-Generate a vROps As Built Report for vCenter Server 'vrops-01.corp.local' using specified credentials. Export report to HTML & DOC formats. Use default report style. Append timestamp to report filename. Save reports to 'C:\Users\Tim\Documents'
+Generate a vROps As Built Report for vROps Server 'vrops-01.corp.local' using specified credentials. Export report to HTML & DOC formats. Use default report style. Append timestamp to report filename. Save reports to 'C:\Users\Tim\Documents'
 ```powershell
 New-AsBuiltReport -Report VMware.vROps -Target 'vrops-01.corp.local' -Username 'admin' -Password 'VMware1!' -Format Html,Word -OutputPath 'C:\Users\Tim\Documents' -Timestamp
 ```
 - Generate HTML & Text reports with Health Checks
-Generate a vSphere As Built Report for vCenter Server 'vrops-01.corp.local' using stored credentials. Export report to HTML & Text formats. Use default report style. Highlight environment issues within the report. Save reports to 'C:\Users\Tim\Documents'
+Generate a vROps As Built Report for vROps Server 'vrops-01.corp.local' using stored credentials. Export report to HTML & Text formats. Use default report style. Highlight environment issues within the report. Save reports to 'C:\Users\Tim\Documents'
 ```powershell
 New-AsBuiltReport -Report VMware.vROps -Target 'vrops-01.corp.local' -Credential $Creds -Format Html,Text -OutputPath 'C:\Users\Tim\Documents' -EnableHealthCheck
 ```
 - Generate report with multiple vROps Servers using Custom Style
-Generate a single vSphere As Built Report for vCenter Servers 'vrops-01.corp.local' and 'vrops-02.corp.local' using specified credentials. Report exports to WORD format by default. Apply custom style to the report. Reports are saved to the user profile folder by default.
+Generate a single vROps As Built Report for vROps Servers 'vrops-01.corp.local' and 'vrops-02.corp.local' using specified credentials. Report exports to WORD format by default. Apply custom style to the report. Reports are saved to the user profile folder by default.
 ```powershell
 New-AsBuiltReport -Report VMware.vROps -Target 'vrops-01.corp.local','vcenter-02.corp.local' -Username 'admin' -Password 'VMware1!' -StylePath C:\Scripts\Styles\MyCustomStyle.ps1
 ```
 - Generate HTML & Word reports, attach and send reports via e-mail
-Generate a vROps As Built Report for vCenter Server 'vrops-01.corp.local' using specified credentials. Export report to HTML & DOC formats. Use default report style. Reports are saved to the user profile folder by default. Attach and send reports via e-mail.
+Generate a vROps As Built Report for vROps Server 'vrops-01.corp.local' using specified credentials. Export report to HTML & DOC formats. Use default report style. Reports are saved to the user profile folder by default. Attach and send reports via e-mail.
 ```powershell
 New-AsBuiltReport -Report VMware.vROps -Target 'vrops-01.corp.local' -Username 'admin' -Password 'VMware1!' -Format Html,Word -OutputPath C:\Users\Tim\Documents -SendEmail
 ```
 ## Report Samples
 
 ### Authentication Configuration Table
-![Authentication Configuration](Samples/2019-06-12-21-03-25.png)
+![](Samples/2019-06-12-21-03-25.png)
 
 ### Alert & Symptom Configuration Table
 ![](Samples/2019-06-12-21-07-26.png)
