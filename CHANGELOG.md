@@ -3,4 +3,5 @@
 ## 0.1.0
 ### What's New
 
-- Refactored code into new module as Tim Carman is really OCD about it.
+- Initial build of vROPs As Built Report.
+- Refactored code into new module.

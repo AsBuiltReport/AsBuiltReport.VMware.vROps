@@ -10,7 +10,7 @@
     },
     "HealthCheck": {},
     "InfoLevel": {
-        "_comment_": "0 = Disabled, 1 = Summary, 2 = Informative, 3 = Detailed, 4 = Adv Detailed, 5 = Comprehensive",
+        "_comment_": "0 = Disabled, 1 = Summary, 2 = Informative, 3 = Detailed",
         "Authentication": 3,
         "Roles": 3,
         "Groups": 3,
