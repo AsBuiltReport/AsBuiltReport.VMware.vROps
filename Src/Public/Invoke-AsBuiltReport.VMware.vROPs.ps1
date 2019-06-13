@@ -53,34 +53,34 @@ function Invoke-AsBuiltReport.VMware.vROPs {
             #                                       SCRIPT BODY                                           #
             ###############################################################################################
             if ($InfoLevel.GlobalSettings -ge 1) {
-                Section -Style Heading1 -Name 'Global Settings' {
+                Section -Style Heading2 -Name 'Global Settings' {
                     $globalSettings = $(getGlobalsettings -resthost $vropshost -credential $Credential).keyValues
                     if ($globalSettings) {
                         $globalSettings = $globalSettings |  select-object @{l = 'Setting'; e = {$_.key}}, @{l = 'Value'; e = {$_.values}}
-                        $globalSettings | Table -List -ColumnWidths 25, 75
+                        $globalSettings | Table
                         BlankLine
                     }
                 }
             }
 
             if ($InfoLevel.ServiceStatus -ge 1) {
-                Section -Style Heading1 -Name 'Service Status' {
+                Section -Style Heading2 -Name 'Service Status' {
                     $serviceStatus = $(getServicesInfo -resthost $vropshost -credential $Credential).service
                     if ($serviceStatus) {
                         $serviceStatus = $serviceStatus |  select-object @{l = 'Name'; e = {$_.name}}, @{l = 'Health'; e = {$_.Health}}, @{l = 'Details'; e = {$_.details}}
-                        $serviceStatus | Table -List -ColumnWidths 25, 75
+                        $serviceStatus | Table
                         BlankLine
                     }
                 }
             }
 
             if ($InfoLevel.Authentication -ge 1) {
-                Section -Style Heading1 -Name 'Authentication' {
+                Section -Style Heading2 -Name 'Authentication' {
                     $AuthSources = $(getAuthSources -resthost $vropshost -credential $Credential).sources
                     if ($AuthSources) {
                         Section -Style Heading2 -Name 'AD Auth Sources' {
                             $AuthSources = $AuthSources | where {$_.sourcetype.name -like '*ACTIVE_DIRECTORY*'} | select-object @{l = 'Name'; e = {$_.name}}, @{l = 'ID'; e = {$_.ID}}
-                            $AuthSources | Table -List -ColumnWidths 25, 75
+                            $AuthSources | Table
                             BlankLine
                         }
                     }
@@ -88,7 +88,7 @@ function Invoke-AsBuiltReport.VMware.vROPs {
             }
 
             if ($InfoLevel.Roles -ge 1) {
-                Section -Style Heading1 -Name 'Roles' {
+                Section -Style Heading2 -Name 'Roles' {
                     $roles = $(getRoles -resthost $vropshost -credential $Credential).userRoles
                     if ($roles) {
 
@@ -110,12 +110,12 @@ function Invoke-AsBuiltReport.VMware.vROPs {
                 $users = $(getUsers -resthost $vropshost -credential $Credential).users
                 $groups = $(getUserGroups -resthost $vropshost -credential $Credential).userGroups
 
-                Section -Style Heading1 -Name 'Groups' {
+                Section -Style Heading2 -Name 'Groups' {
                     if ($groups) {
                         foreach ($g in ($groups | where {!($_.authSourceId)})) {
-                            Section -Style Heading2 -Name 'System Groups' {
-                                $groupsSystem = $g  |select-object @{l = 'Name'; e = {$_.name}}, @{l = 'Description'; e = {$_.description}}
-                                $groupsSystem | Table -List -ColumnWidths 25, 75
+                            Section -Style Heading3 -Name 'System Groups' {
+                                    $groupsSystem = $g  |select-object @{l = 'Name'; e = {$_.name}}, @{l = 'Description'; e = {$_.description}}
+                                    $groupsSystem | Table -List -ColumnWidths 25, 75
                                 BlankLine
                             }
                             if ($InfoLevel.Groups -ge 2) {
@@ -133,7 +133,7 @@ function Invoke-AsBuiltReport.VMware.vROPs {
                         foreach ($g in $groups | where {$_.authSourceId}) {
                             Section -Style Heading2 -Name 'Imported Groups' {
                                 $groupsImported = $g | where {$_.authSourceId} |select-object @{l = 'Name'; e = {$_.name}}, @{l = 'Description'; e = {$_.description}}
-                                $groupsImported | Table -List -ColumnWidths 25, 75
+                                $groupsImported | Table
                                 BlankLine
                             }
                                 if ($InfoLevel.Groups -ge 2) { 
@@ -152,15 +152,15 @@ function Invoke-AsBuiltReport.VMware.vROPs {
             }
 
             if ($InfoLevel.Users -ge 1) {
-                Section -Style Heading1 -Name 'User Accounts' {
+                Section -Style Heading2 -Name 'User Accounts' {
                     if ($users) {
-                        Section -Style Heading2 -Name 'System Users' {
+                        Section -Style Heading3 -Name 'System Users' {
                             $systemUsers = $users | where {$_.distinguishedName -like ''} | select-object @{l = 'Username'; e = {$_.username}}, @{l = 'First Name'; e = {$_.firstName}}, @{l = 'Last Name'; e = {$_.lastName}}, @{l = 'Enabled'; e = {$_.enabled}}, @{l = 'Roles'; e = {$($_.rolenames) -join ', '}}
                             $systemUsers | Table -List -ColumnWidths 25, 75
                             BlankLine
                         }
 
-                        Section -Style Heading2 -Name 'Imported Users' {
+                        Section -Style Heading3 -Name 'Imported Users' {
                             $importedUsers = $users | where {$_.'distinguishedName' -notlike ''} | select-object @{l = 'Username'; e = {$_.username}}, @{l = 'First Name'; e = {$_.firstName}}, @{l = 'Last Name'; e = {$_.lastName}}, @{l = 'Distinguished Name'; e = {$_.distinguishedName}}, @{l = 'Enabled'; e = {$_.enabled}}
                             $importedUsers | Table -List -ColumnWidths 25, 75
                             BlankLine
@@ -176,7 +176,7 @@ function Invoke-AsBuiltReport.VMware.vROPs {
                         foreach ($rcGroup in $collectorGroups) {
                             Section -Style Heading3 -Name $($rcGroup).name {
                                 $Group = $rcGroup |  select-object @{l = 'Name'; e = {$_.name}}, @{l = 'Description'; e = {$_.Description}}
-                                $Group | Table -List -ColumnWidths 25, 75
+                                $Group |Table -ColumnWidths 25, 75
                                 BlankLine
 
                                 if ($InfoLevel.RemoteCollectors -ge 2) {
@@ -184,7 +184,7 @@ function Invoke-AsBuiltReport.VMware.vROPs {
                                         foreach ($rcId in $($rcGroup).collectorId) {
                                             $rcNames = $(getCollectors -resthost $vropshost -credential $Credential).collector | where {$_.id -like $rcId}
                                             $rcNames = $rcNames | Select-Object @{l = 'Name'; e = {$_.name}},@{l = 'Hostname'; e = {$_.hostName}}
-                                            $rcNames | Table -List -ColumnWidths 25, 75
+                                            $rcNames |Table -ColumnWidths 25, 75
                                             BlankLine
                                         }
                                     }
@@ -196,23 +196,23 @@ function Invoke-AsBuiltReport.VMware.vROPs {
             }
 
             if ($InfoLevel.RemoteCollectors -ge 1) {
-                Section -Style Heading1 -Name 'Remote Collectors' {
+                Section -Style Heading2 -Name 'Remote Collectors' {
                     $collectors= $(getCollectors -resthost $vropshost -credential $Credential).collector
                     $localNodes = $collectors  | where {$_.local -like '*True*'}
                     $remoteCollectors = $collectors  | where {$_.local -like '*False*'}
 
                     if ($localNodes) {
-                        Section -Style Heading2 -Name 'Local Nodes' {
+                        Section -Style Heading3 -Name 'Local Nodes' {
                             $localNodes = $localNodes | sort-object ID | select-object @{l = 'Name'; e = {$_.name}},@{l = 'ID'; e = {$_.id}},  @{l = 'State'; e = {$_.State}}, @{l = 'Hostname'; e = {$_.hostname}}, @{l = 'Last Heartbeat'; e = {(convertEpoch -epochTime $_.lastHeartbeat)}}
-                            $localNodes | Table -List -ColumnWidths 25, 75
+                            $localNodes |Table -List -ColumnWidths 25, 75
                             BlankLine
                         }
                     }
 
                     if ($remoteCollectors) {
-                        Section -Style Heading2 -Name 'Remote Collectors' {
+                        Section -Style Heading3 -Name 'Remote Collectors' {
                             $remoteCollectors = $remoteCollectors | sort-object ID | select-object @{l = 'Name'; e = {$_.name}},@{l = 'ID'; e = {$_.id}},  @{l = 'State'; e = {$_.State}}, @{l = 'Hostname'; e = {$_.hostname}}, @{l = 'Last Heartbeat'; e = {(convertEpoch -epochTime $_.lastHeartbeat)}}
-                            $remoteCollectors | Table -List -ColumnWidths 25, 75
+                            $remoteCollectors |Table -List -ColumnWidths 25, 75
                             BlankLine
                         }
                     }
@@ -220,18 +220,18 @@ function Invoke-AsBuiltReport.VMware.vROPs {
             }
 
             if ($InfoLevel.Adapters -ge 1) {
-                Section -Style Heading1 -Name 'Adapters' {
+                Section -Style Heading2 -Name 'Adapters' {
                     $AdapterInstance = $(getAdapterInstances -resthost $vropshost -credential $Credential).adapterInstancesInfoDto 
                     $collectors= $(getCollectors -resthost $vropshost -credential $Credential).collector
                     if ($AdapterInstance) {
                         foreach ($adapterKind in $AdapterInstance.resourcekey.adapterKindKey | sort -Unique) {
-                            Section -Style Heading2 -Name "$adapterKind" {
+                            Section -Style Heading3 -Name "$adapterKind" {
                             $AdapterInstances = $AdapterInstance | where {$_.resourcekey.adapterKindKey -like $adapterKind}
 
                                 foreach ($adapter in $AdapterInstances) {
                                     $rc = $collectors | where {$_.id -like $adapter.collectorId}
                                     $adapter = $adapter | select-object @{l = 'Name'; e = {$_.resourceKey.name}}, @{l = 'Resource Kind'; e = {$_.resourceKey.resourceKindKey}}, @{l = 'Description'; e = {$_.description}}, @{l = 'Message from Adapter'; e = {$_.messageFromAdapterInstance}}, @{l = 'Collector Node'; e = {$rc.name}}, @{l = 'Last Heartbeat'; e = {(convertEpoch -epochTime $_.lastHeartbeat)}}, @{l = 'Last Collected'; e = {(convertEpoch -epochTime $_.lastCollected)}}, @{l = 'Metrics Collected'; e = {$_.numberOfMetricsCollected}}, @{l = 'Resources Collected'; e = {$_.numberOfResourcesCollected}} 
-                                    $adapter | Table -List -ColumnWidths 25, 75
+                                    $adapter |Table -List -ColumnWidths 25, 75
                                     BlankLine
                                 }
                             }
@@ -243,11 +243,11 @@ function Invoke-AsBuiltReport.VMware.vROPs {
             if ($InfoLevel.Alerts -ge 1) {
                 $alerts = $(getAlertDefinitions -resthost $vropshost -credential $Credential).alertDefinitions | where {$_.name -like "*$($Options.AlertFilter)*"}
                 if ($alerts) {
-                    Section -Style Heading1 -Name 'Alerts' {
+                    Section -Style Heading2 -Name 'Alerts' {
                         foreach ($a in $alerts){
-                            Section -Style Heading2 -Name $a.name {
+                            Section -Style Heading3 -Name $a.name {
                                 $alertDetail = $a | select-object @{l = 'Name'; e = {$_.name}},@{l = 'ID'; e = {$_.id}},@{l = 'description'; e = {$_.description}},@{l = 'adapterKindKey'; e = {$_.adapterKindKey}},@{l = 'resourceKindKey'; e = {$_.resourceKindKey}},@{l = 'waitCycles'; e = {$_.waitCycles}},@{l = 'cancelCycles'; e = {$_.cancelCycles}}
-                                $alertDetail | Table -List -ColumnWidths 25, 75
+                                $alertDetail |Table -List -ColumnWidths 25, 75
                                 BlankLine
 
                                 if ($InfoLevel.Symptoms -ge 2) {
@@ -256,7 +256,7 @@ function Invoke-AsBuiltReport.VMware.vROPs {
                                         $sympHashTable = @()
                                         $symDef = $(getSymptomDefinitions -resthost $vropshost -credential $Credential -symptomdefinitionid $s).symptomDefinitions
                                         if ($symDef.state.condition.type -contains 'CONDITION_MESSAGE_EVENT' ) {
-                                            Section -Style Heading3 -Name "Symptom: $($symDef.name)" {
+                                            Section -Style Heading4 -Name "Symptom: $($symDef.name)" {
 
                                             $sympHashTable += [PSCustomObject]@{
                                                 'Name' = $symDef.name
@@ -270,7 +270,7 @@ function Invoke-AsBuiltReport.VMware.vROPs {
                                                 'message' = $symDef.state.condition.message
                                                 'operator' = $symDef.state.condition.operator
                                             }
-                                            $sympHashTable | Table -List -ColumnWidths 25, 75
+                                            $sympHashTable |Table -List -ColumnWidths 25, 75
                                             BlankLine
                                             }
                                         } elseif ($symDef.state.condition.type -contains 'CONDITION_HT' ) {
@@ -292,7 +292,7 @@ function Invoke-AsBuiltReport.VMware.vROPs {
                                                     'instanced' = $symDef.state.condition.instanced
                                                     'thresholdType' = $symDef.state.condition.thresholdType
                                                 }
-                                                    $sympHashTable | Table -List -ColumnWidths 25, 75
+                                                    $sympHashTable |Table -List -ColumnWidths 25, 75
                                                     BlankLine
 
                                             } 
@@ -313,7 +313,7 @@ function Invoke-AsBuiltReport.VMware.vROPs {
                                                     'operator' = $symDef.state.condition.operator
                                                     'thresholdType' = $symDef.state.condition.thresholdType
                                                 }
-                                                    $sympHashTable | Table -List -ColumnWidths 25, 75
+                                                    $sympHashTable |Table -List -ColumnWidths 25, 75
                                                     BlankLine
                                             }
                                         } elseif ($symDef.state.condition.type -contains 'CONDITION_FAULT' ) {
@@ -331,7 +331,7 @@ function Invoke-AsBuiltReport.VMware.vROPs {
                                                     'faultKey' = $symDef.state.condition.faultKey
                                                     #'faultEvents' = $symDef.state.condition.faultEvents
                                                 }
-                                                    $sympHashTable | Table -List -ColumnWidths 25, 75
+                                                    $sympHashTable |Table -List -ColumnWidths 25, 75
                                                     BlankLine
                                             }
                                         } elseif ($symDef.state.condition.type -contains 'CONDITION_PROPERTY_NUMERIC' ) {
@@ -367,7 +367,7 @@ function Invoke-AsBuiltReport.VMware.vROPs {
                                                     'type' = $symDef.state.condition.type
 
                                                 } 
-                                                $sympHashTable | Table -List -ColumnWidths 25, 75
+                                                $sympHashTable |Table -List -ColumnWidths 25, 75
                                                 BlankLine
                                             }
                                         }#>
@@ -380,33 +380,33 @@ function Invoke-AsBuiltReport.VMware.vROPs {
             }
 
             if ($InfoLevel.SuperMetrics -ge 1) {
-                    Section -Style Heading1 -Name 'Super Metrics' {
+                    Section -Style Heading2 -Name 'Super Metrics' {
                     $superMetrics = $(getSuperMetrics -resthost $vropshost -credential $Credential).supermetrics
                     if ($superMetrics) {
                         $superMetrics = $superMetrics |  select-object @{l = 'Name'; e = {$_.name}}, @{l = 'ID'; e = {$_.ID}}, @{l = 'Formula'; e = {$_.formula}}
-                        $superMetrics | Table -List -ColumnWidths 25, 75
+                        $superMetrics |Table -List -ColumnWidths 25, 75
                         BlankLine
                     }
                 }
             }
 
             if ($InfoLevel.CustomGroups -ge 1) {
-                Section -Style Heading1 -Name 'Custom Groups' {
+                Section -Style Heading2 -Name 'Custom Groups' {
                     $customGroups = $(getCustomGroups -resthost $vropshost -credential $Credential).values
                     if ($customGroups) {
                         $customGroups = $customGroups |  select-object @{l = 'Name'; e = {$_.resourceKey.name}}, @{l = 'Adapter Kind'; e = {$_.resourceKey.adapterKindKey}}, @{l = 'Resource Kind'; e = {$_.resourceKey.resourceKindKey}}
-                        $customGroups | Table -List -ColumnWidths 25, 75
+                        $customGroups | Table
                         BlankLine
                     }
                 }
             }
 
             if ($InfoLevel.Reports -ge 1) {
-                Section -Style Heading1 -Name 'Reports' {
+                Section -Style Heading2 -Name 'Reports' {
                     $reports = $(getReportDefinitions -resthost $vropshost -credential $Credential).reportDefinitions
                     if ($reports) {
                         $reports = $reports |  select-object @{l = 'Name'; e = {$_.name}}, @{l = 'Description'; e = {$_.description}}, @{l = 'Owner'; e = {$_.owner}}, @{l = 'Subject'; e = {$_.subject -join ", " }}, @{l = 'Active'; e = {$_.active}}
-                        $reports | Table -List -ColumnWidths 25, 75
+                        $reports |Table -List -ColumnWidths 25, 75
                         BlankLine
                     }
                 }
