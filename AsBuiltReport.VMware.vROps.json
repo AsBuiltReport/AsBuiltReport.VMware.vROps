@@ -11,6 +11,7 @@
     "HealthCheck": {},
     "InfoLevel": {
         "_comment_": "0 = Disabled, 1 = Summary, 2 = Informative, 3 = Detailed",
+        "GlobalSettings": 3,
         "Authentication": 3,
         "Roles": 3,
         "Groups": 3,
@@ -18,7 +19,7 @@
         "Adapters": 3,
         "RemoteCollectors": 3,
         "Alerts": 3,
-        "Symptoms":3,
+        "Symptoms": 3,
         "SuperMetrics": 3,
         "ServiceStatus": 3,
         "CustomGroups": 3
