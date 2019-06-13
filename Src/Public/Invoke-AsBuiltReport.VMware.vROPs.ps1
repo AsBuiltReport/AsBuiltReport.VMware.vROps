@@ -134,7 +134,7 @@ function Invoke-AsBuiltReport.VMware.vROps {
                         foreach ($g in $groups | Where-Object { $_.authSourceId }) {
                             Section -Style Heading2 -Name 'Imported Groups' {
                                 $groupsImported = $g | Where-Object { $_.authSourceId } | Select-Object @{l = 'Name'; e = { $_.name } }, @{l = 'Description'; e = { $_.description } }
-                                $groupsImported | Table -Name 'Imported Groups'
+                                $groupsImported | Table -Name 'Imported Groups' -List -ColumnWidths 25, 75
                             }
                             if ($InfoLevel.Groups -ge 2) { 
                                 Section -Style Heading3 -Name 'Users in Group' {
@@ -177,14 +177,14 @@ function Invoke-AsBuiltReport.VMware.vROps {
                         foreach ($rcGroup in $collectorGroups) {
                             Section -Style Heading3 -Name $($rcGroup).name {
                                 $Group = $rcGroup | Select-Object @{l = 'Name'; e = { $_.name } }, @{l = 'Description'; e = { $_.Description } }
-                                $Group | Table -Name 'Remote Collector Groups' le -ColumnWidths 25, 75
+                                $Group | Table -Name 'Remote Collector Groups' -ColumnWidths 25, 75
 
                                 if ($InfoLevel.RemoteCollectors -ge 2) {
-                                    Section -Style Heading4 -Name "Group Members" {
+                                    Section -Style Heading4 -Name "Members" {
                                         foreach ($rcId in $($rcGroup).collectorId) {
                                             $rcNames = $(getCollectors -resthost $vropshost -credential $Credential).collector | Where-Object { $_.id -like $rcId }
                                             $rcNames = $rcNames | Select-Object @{l = 'Name'; e = { $_.name } }, @{l = 'Hostname'; e = { $_.hostName } }
-                                            $rcNames | Table -Name 'Group Members' -ColumnWidths 25, 75
+                                            $rcNames | Table -Name 'Members' -List -ColumnWidths 25, 75
                                         }
                                     }
                                 }
@@ -208,9 +208,9 @@ function Invoke-AsBuiltReport.VMware.vROps {
                     }
 
                     if ($remoteCollectors) {
-                        Section -Style Heading3 -Name 'Remote Collectors' {
+                        Section -Style Heading3 -Name 'Remote Nodes' {
                             $remoteCollectors = $remoteCollectors | Sort-Object ID | Select-Object @{l = 'Name'; e = { $_.name } }, @{l = 'ID'; e = { $_.id } }, @{l = 'State'; e = { $_.State } }, @{l = 'Hostname'; e = { $_.hostname } }, @{l = 'Last Heartbeat'; e = { (convertEpoch -epochTime $_.lastHeartbeat) } }
-                            $remoteCollectors | Table -Name 'Remote Collectors' -List -ColumnWidths 25, 75
+                            $remoteCollectors | Table -Name 'Remote Nodes' -List -ColumnWidths 25, 75
                         }
                     }
                 }
@@ -363,7 +363,7 @@ function Invoke-AsBuiltReport.VMware.vROps {
                 if ($superMetrics) {
                     Section -Style Heading2 -Name 'Super Metrics' {
                         $superMetrics = $superMetrics | Select-Object @{l = 'Name'; e = { $_.name } }, @{l = 'ID'; e = { $_.ID } }, @{l = 'Formula'; e = { $_.formula } }
-                        $superMetrics | Table -List -ColumnWidths 25, 75
+                        $superMetrics | Table -Name "Super Metrics" -List -ColumnWidths 25, 75
                     }
                 }
             }
@@ -375,7 +375,7 @@ function Invoke-AsBuiltReport.VMware.vROps {
                 if ($customGroups) {
                     Section -Style Heading2 -Name 'Custom Groups' {
                         $customGroups = $customGroups | Select-Object @{l = 'Name'; e = { $_.resourceKey.name } }, @{l = 'Adapter Kind'; e = { $_.resourceKey.adapterKindKey } }, @{l = 'Resource Kind'; e = { $_.resourceKey.resourceKindKey } }
-                        $customGroups | Table
+                        $customGroups | Table -Name "Custom Groups" -List -ColumnWidths 25, 75
                     }
                 }
             }
@@ -387,7 +387,7 @@ function Invoke-AsBuiltReport.VMware.vROps {
                 if ($reports) {
                     Section -Style Heading2 -Name 'Reports' {
                         $reports = $reports | Select-Object @{l = 'Name'; e = { $_.name } }, @{l = 'Description'; e = { $_.description } }, @{l = 'Owner'; e = { $_.owner } }, @{l = 'Subject'; e = { $_.subject -join ", " } }, @{l = 'Active'; e = { $_.active } }
-                        $reports | Table -List -ColumnWidths 25, 75
+                        $reports | Table -Name "Reports" -List -ColumnWidths 25, 75
                     }
                 }
             }

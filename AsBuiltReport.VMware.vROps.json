@@ -22,6 +22,7 @@
         "Symptoms": 3,
         "SuperMetrics": 3,
         "ServiceStatus": 3,
-        "CustomGroups": 3
+        "CustomGroups": 3,
+        "Reports": 1
     }
 }
