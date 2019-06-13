@@ -24,7 +24,7 @@ install-module VMware.PowerCLI
 Open a Windows PowerShell terminal window and pull the latest version of PowervROps from Github.
 
 ```powershell
-git pull https://github.com/ymmit85/pwoervrops.git
+git clone https://github.com/ymmit85/powervrops.git
 import-module \PowervROps\PowervROPs.psm1
 ```
 
