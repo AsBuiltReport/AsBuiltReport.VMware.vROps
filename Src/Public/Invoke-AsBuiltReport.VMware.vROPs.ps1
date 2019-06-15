@@ -79,10 +79,9 @@ function Invoke-AsBuiltReport.VMware.vROps {
                 $AuthSources = $(getAuthSources -resthost $vropshost -credential $Credential).sources
                 if ($AuthSources) {
                     Section -Style Heading2 -Name 'Authentication' {
-                        Section -Style Heading2 -Name 'AD Auth Sources' {
+                        Paragraph -Style Heading3 -Name 'AD Auth Sources' 
                             $AuthSources = $AuthSources | Where-Object { $_.sourcetype.name -like '*ACTIVE_DIRECTORY*' } | Select-Object @{l = 'Name'; e = { $_.name } }, @{l = 'ID'; e = { $_.ID } }
                             $AuthSources | Table -Name 'AD Auth Sources'
-                        }
                     }
                 }
             }
@@ -93,21 +92,21 @@ function Invoke-AsBuiltReport.VMware.vROps {
                 $roles = $(getRoles -resthost $vropshost -credential $Credential).userRoles
                 if ($roles) {
                     Section -Style Heading2 -Name 'Roles' {
-                        Section -Style Heading2 -Name 'System Roles' {
+                        Paragraph -Style Heading3 -Name 'System Roles' 
                             $roleSystem = $roles | Where-Object { $_.'system-created' -like 'True' } | Select-Object @{l = 'Name'; e = { $_.name } }, @{l = 'Description'; e = { $_.description } }, @{l = 'Display Name'; e = { $_.displayName } }   
-                            $roleSystem | Table -Name 'System Roles' -List -ColumnWidths 20, 80
-                        }
+                            $roleSystem | Table -Name 'System Roles'
+                        BlankLine
 
-                        Section -Style Heading2 -Name 'Custom Roles' {
+                        Paragraph -Style Heading3 -Name 'Custom Roles' 
                             $roleSystem = $roles | Where-Object { $_.'system-created' -like 'False' } | Select-Object @{l = 'Name'; e = { $_.name } }, @{l = 'Description'; e = { $_.description } }, @{l = 'Display Name'; e = { $_.displayName } } 
-                            $roleSystem | Table -Name 'Custom Roles' -List -ColumnWidths 20, 80
-                        }
+                            $roleSystem | Table -Name 'Custom Roles'
+                        BlankLine
                     }
                 }
             }
             #endregion Roles
 
-            #region Users/Groups
+            #region Groups
             $users = $(getUsers -resthost $vropshost -credential $Credential).users
             $groups = $(getUserGroups -resthost $vropshost -credential $Credential).userGroups
 
@@ -118,87 +117,93 @@ function Invoke-AsBuiltReport.VMware.vROps {
 
                     Section -Style Heading3 -Name 'System Groups' {
                         $groupsSystem = $groups | Where-Object { !($_.authSourceId) } | Select-Object @{l = 'Name'; e = { $_.name } }, @{l = 'Description'; e = { $_.description } }, @{l = 'Roles'; e = { $_.roleNames } }
-                        $groupsSystem | Table -Name 'System Groups' -List -ColumnWidths 20, 80
+                        $groupsSystem | Table -Name 'System Groups'
                     }
 
                     Section -Style Heading2 -Name 'Imported Groups' {
                         $groupsImported = $groups | Where-Object { $_.authSourceId } | Select-Object @{l = 'Name'; e = { $_.name } }, @{l = 'Description'; e = { $_.description } }, @{l = 'Roles'; e = { $_.roleNames } }
-                        $groupsImported | Table -Name 'Imported Groups' -List -ColumnWidths 20, 80
+                        $groupsImported | Table -Name 'Imported Groups'
                     }
                     }   elseif ($InfoLevel.Groups -ge 2)    {
 
                         foreach ($g in $groups | Where-Object { !($_.authSourceId) }) {
-                            Section -Style Heading3 -Name 'System Groups' {
+                            Paragraph -Style Heading3 -Name 'System Groups' 
                                 $groupsSystem = $g | Select-Object @{l = 'Name'; e = { $_.name } }, @{l = 'Description'; e = { $_.description } }, @{l = 'Roles'; e = { $_.roleNames } }
-                                $groupsSystem | Table -Name 'System Groups' -List -ColumnWidths 20, 80
-
+                                $groupsSystem | Table -Name 'System Groups'
+                                BlankLine
                                 if ($InfoLevel.Groups -ge 3) {
-                                    Section -Style Heading3 -Name 'Users' {
+                                    Paragraph -Style Heading3 -Name 'Users'
+                                    BlankLine
+                                        $usersInGroup = @()
                                         foreach ($c in $g.userIds) {
-                                            $usersInGroup = $users | Where-Object { $_.id -eq $c } | Select-Object @{l = 'Username'; e = { $_.username } }, @{l = 'First Name'; e = { $_.firstName } }, @{l = 'Last Name'; e = { $_.lastName } }, @{l = 'Distinguished Name'; e = { $_.distinguishedName } }
-                                            $usersInGroup | Table -Name 'Users' -List -ColumnWidths 20, 80
-                                            BlankLine
+                                            $usersInGroup+= $users | Where-Object { $_.id -eq $c } | Select-Object @{l = 'Username'; e = { $_.username } }, @{l = 'First Name'; e = { $_.firstName } }, @{l = 'Last Name'; e = { $_.lastName } }, @{l = 'Distinguished Name'; e = { $_.distinguishedName } }
                                         }
-                                    }
+                                        $usersInGroup | Table -Name 'Users'
+                                        BlankLine
+
                                 } else {
-                                    Section -Style Heading3 -Name 'Users' {
+                                    Paragraph -Style Heading3 -Name 'Users' 
+                                        $usersInGroup = @()
                                         foreach ($c in $g.userIds) {
-                                            $usersInGroup = $users | Where-Object { $_.id -eq $c } | Select-Object @{l = 'Username'; e = { $_.username } }, @{l = 'First Name'; e = { $_.firstName } }, @{l = 'Last Name'; e = { $_.lastName } }
-                                            $usersInGroup | Table -Name 'Users' -List -ColumnWidths 20, 80
-                                            BlankLine
+                                            $usersInGroup = $users | Where-Object { $_.id -contains $c } | Select-Object @{l = 'Username'; e = { $_.username } }, @{l = 'First Name'; e = { $_.firstName } }, @{l = 'Last Name'; e = { $_.lastName } }
                                         }
-                                    }
+                                        $usersInGroup | Table -Name 'Users'
+                                        BlankLine
+
                                 }
-                            }
                         }
                             foreach ($g in $groups | Where-Object { $_.authSourceId }) {
-                                Section -Style Heading3 -Name 'Imported Groups' {
+                                Paragraph -Style Heading3 -Name 'Imported Groups' 
                                     $groupsSystem = $g | Select-Object @{l = 'Name'; e = { $_.name } }, @{l = 'Description'; e = { $_.description } }, @{l = 'Roles'; e = { $_.roleNames } }
-                                    $groupsSystem | Table -Name 'Imported Groups' -List -ColumnWidths 20, 80
-
+                                    $groupsSystem | Table -Name 'Imported Groups'
+                                    BlankLine
                                     if ($InfoLevel.Groups -ge 3) {
-                                        Section -Style Heading3 -Name 'Users' {
+                                        Paragraph -Style Heading3 -Name 'Users'
+                                        BlankLine
+                                        $usersInGroup = @()
                                             foreach ($c in $g.userIds) {
                                                 $usersInGroup = $users | Where-Object { $_.id -eq $c } | Select-Object @{l = 'Username'; e = { $_.username } }, @{l = 'First Name'; e = { $_.firstName } }, @{l = 'Last Name'; e = { $_.lastName } }, @{l = 'Distinguished Name'; e = { $_.distinguishedName } }
-                                                $usersInGroup | Table -Name 'Users' -List -ColumnWidths 20, 80
-                                                BlankLine
                                             }
-                                        }
+                                            $usersInGroup | Table -Name 'Users'
+                                            BlankLine
+
                                     } else {
 
-                                    Section -Style Heading3 -Name 'Users' {
+                                    Paragraph -Style Heading3 -Name 'Users'
+                                    BlankLine
+                                    $usersInGroup = @()
                                         foreach ($c in $g.userIds) {
                                             $usersInGroup = $users | Where-Object { $_.id -eq $c } | Select-Object @{l = 'Username'; e = { $_.username } }, @{l = 'First Name'; e = { $_.firstName } }, @{l = 'Last Name'; e = { $_.lastName } }
-                                            $usersInGroup | Table -Name 'Users' -List -ColumnWidths 20, 80
-                                            BlankLine
                                         }
-                                    }
+                                        $usersInGroup | Table -Name 'Users' -ColumnWidths 30, 35, 35
+                                        BlankLine
                                 }
-                            }
                         }
                     }
                 }
             }
 
+            #endregion Groups
+            #region Users
             if ($InfoLevel.Users -ge 1) {
-                if ($users) {
-                    Section -Style Heading2 -Name 'User Accounts' {
-                        Section -Style Heading3 -Name 'System Users' {
-                            $systemUsers = $users | Where-Object { $_.distinguishedName -like '' } | Select-Object @{l = 'Username'; e = { $_.username } }, @{l = 'First Name'; e = { $_.firstName } }, @{l = 'Last Name'; e = { $_.lastName } }, @{l = 'Enabled'; e = { $_.enabled } }, @{l = 'Roles'; e = { $($_.rolenames) -join ', ' } }
-                            $systemUsers | Table -Name 'System Users' -List -ColumnWidths 20, 80
+                if (!($users)) {
+                    $users = $(getUsers -resthost $vropshost -credential $Credential).users
+                }
+                Section -Style Heading2 -Name 'User Accounts' {
+                    Paragraph -Style Heading3 -Name 'System Users' 
+                        $systemUsers = $users | Where-Object { $_.distinguishedName -like '' } | Select-Object @{l = 'Username'; e = { $_.username } }, @{l = 'First Name'; e = { $_.firstName } }, @{l = 'Last Name'; e = { $_.lastName } }, @{l = 'Enabled'; e = { $_.enabled } }, @{l = 'Roles'; e = { $($_.rolenames) -join ', ' } }
+                        $systemUsers | Table -Name 'System Users'
+                        BlankLine
+                    
+                    if ($InfoLevel.Users -ge 2) {
+                        Paragraph -Style Heading3 -Name 'Imported Users' 
+                            $importedUsers = $users | Where-Object { $_.'distinguishedName' -notlike '' } | Select-Object @{l = 'Username'; e = { $_.username } }, @{l = 'First Name'; e = { $_.firstName } }, @{l = 'Last Name'; e = { $_.lastName } }, @{l = 'Distinguished Name'; e = { $_.distinguishedName } }, @{l = 'Enabled'; e = { $_.enabled } }
+                            $importedUsers | Table -Name 'Imported Users'
                             BlankLine
-                        }
-                        if ($InfoLevel.Users -ge 2) {
-                            Section -Style Heading3 -Name 'Imported Users' {
-                                $importedUsers = $users | Where-Object { $_.'distinguishedName' -notlike '' } | Select-Object @{l = 'Username'; e = { $_.username } }, @{l = 'First Name'; e = { $_.firstName } }, @{l = 'Last Name'; e = { $_.lastName } }, @{l = 'Distinguished Name'; e = { $_.distinguishedName } }, @{l = 'Enabled'; e = { $_.enabled } }
-                                $importedUsers | Table -Name 'Imported Users' -List -ColumnWidths 20, 80
-                                BlankLine
-                            }
-                        }
                     }
                 }
             }
-            #endregion Users/Groups
+            #endregion Users
 
             #region Remote Collectors
             if ($InfoLevel.RemoteCollectors -ge 1) {
@@ -208,17 +213,19 @@ function Invoke-AsBuiltReport.VMware.vROps {
                     $remoteCollectors = $collectors | Where-Object { $_.local -like '*False*' }
 
                     if ($localNodes) {
-                        Section -Style Heading3 -Name 'Local Nodes' {
+                        Paragraph -Style Heading3 -Name 'Local Nodes' 
+                        BlankLine
                             $localNodes = $localNodes | Sort-Object ID | Select-Object @{l = 'Name'; e = { $_.name } }, @{l = 'ID'; e = { $_.id } }, @{l = 'State'; e = { $_.State } }, @{l = 'Hostname'; e = { $_.hostname } }, @{l = 'Last Heartbeat'; e = { (convertEpoch -epochTime $_.lastHeartbeat) } }
-                            $localNodes | Table -Name 'Local Nodes' -List -ColumnWidths 20, 80
-                        }
+                            $localNodes | Table -Name 'Local Nodes'
+                            BlankLine
                     }
 
                     if ($remoteCollectors) {
-                        Section -Style Heading3 -Name 'Remote Nodes' {
+                        Paragraph -Style Heading3 -Name 'Remote Nodes'
+                        BlankLine
                             $remoteCollectors = $remoteCollectors | Sort-Object ID | Select-Object @{l = 'Name'; e = { $_.name } }, @{l = 'ID'; e = { $_.id } }, @{l = 'State'; e = { $_.State } }, @{l = 'Hostname'; e = { $_.hostname } }, @{l = 'Last Heartbeat'; e = { (convertEpoch -epochTime $_.lastHeartbeat) } }
-                            $remoteCollectors | Table -Name 'Remote Nodes' -List -ColumnWidths 20, 80
-                        }
+                            $remoteCollectors | Table -Name 'Remote Nodes'
+                        BlankLine
                     }
                 }
             }
@@ -228,22 +235,23 @@ function Invoke-AsBuiltReport.VMware.vROps {
                 if ($collectorGroups) {
                     Section -Style Heading2 -Name 'Remote Collector Groups' {
                         foreach ($rcGroup in $collectorGroups) {
-                            Section -Style Heading3 -Name $($rcGroup).name {
+                            Paragraph -Style Heading3 -Name $($rcGroup).name
+                            BlankLine
                                 $Group = $rcGroup | Select-Object @{l = 'Name'; e = { $_.name } }, @{l = 'Description'; e = { $_.Description } }
-                                $Group | Table -Name 'Remote Collector Groups' -List -ColumnWidths 20, 80
+                                $Group | Table -Name 'Remote Collector Groups'
+                                BlankLine
 
                                 if ($InfoLevel.RemoteCollectors -ge 2) {
                                     foreach ($rcId in $($rcGroup).collectorId) {
                                         $rcNames = $collectors | Where-Object { $_.id -like $rcId }
                                         if ($rcNames) {
-                                            Section -Style Heading4 -Name "Members" {
+                                            Paragraph -Style Heading3 -Name "Members" 
+                                            BlankLine
                                                 $rcNames = $rcNames | Select-Object @{l = 'Name'; e = { $_.name } },@{l = 'ID'; e = { $_.id } }, @{l = 'Hostname'; e = { $_.hostName } }
                                                 $rcNames | Table -Name 'Members'
-                                            }
                                         }
                                     }
                                 }
-                            }
                         }
                     }
                 }
@@ -257,16 +265,16 @@ function Invoke-AsBuiltReport.VMware.vROps {
                 if ($AdapterInstance) {
                     Section -Style Heading2 -Name 'Adapters' {
                         foreach ($adapterKind in $AdapterInstance.resourcekey.adapterKindKey | Sort-Object -Unique) {
-                            Section -Style Heading3 -Name "$adapterKind" {
+                            Paragraph -Style Heading3 -Name "$adapterKind"
+                            BlankLine
                                 $AdapterInstances = $AdapterInstance | Where-Object { $_.resourcekey.adapterKindKey -like $adapterKind }
 
                                 foreach ($adapter in $AdapterInstances) {
                                     $rc = $collectors | Where-Object { $_.id -like $adapter.collectorId }
                                     $adapter = $adapter | Select-Object @{l = 'Name'; e = { $_.resourceKey.name } }, @{l = 'Resource Kind'; e = { $_.resourceKey.resourceKindKey } }, @{l = 'Description'; e = { $_.description } }, @{l = 'Message from Adapter'; e = { $_.messageFromAdapterInstance } }, @{l = 'Collector Node'; e = { $rc.name } }, @{l = 'Last Heartbeat'; e = { (convertEpoch -epochTime $_.lastHeartbeat) } }, @{l = 'Last Collected'; e = { (convertEpoch -epochTime $_.lastCollected) } }, @{l = 'Metrics Collected'; e = { $_.numberOfMetricsCollected } }, @{l = 'Resources Collected'; e = { $_.numberOfResourcesCollected } } 
-                                    $adapter | Table -Name 'Adapters' -List -ColumnWidths 25, 75
+                                    $adapter | Table -Name 'Adapters' -List -ColumnWidths 15, 85
                                     BlankLine
                                 }
-                            }
                         }
                     }
                 }
@@ -277,11 +285,17 @@ function Invoke-AsBuiltReport.VMware.vROps {
             if ($InfoLevel.Alerts -ge 1) {
                 $alerts = $(getAlertDefinitions -resthost $vropshost -credential $Credential).alertDefinitions | Where-Object { $_.name -like "*$($Options.AlertFilter)*" }
                 if ($alerts) {
+
+                    $alertSeverity = $alerts.states.severity | Sort-Object | Get-Unique -AsString
                     Section -Style Heading2 -Name 'Alerts' {
-                        foreach ($a in $alerts) {
-                            Section -Style Heading3 -Name $a.name {
-                                $alertDetail = $a | Select-Object @{l = 'Name'; e = { $_.name } }, @{l = 'ID'; e = { $_.id } }, @{l = 'description'; e = { $_.description } }, @{l = 'adapterKindKey'; e = { $_.adapterKindKey } }, @{l = 'resourceKindKey'; e = { $_.resourceKindKey } }, @{l = 'waitCycles'; e = { $_.waitCycles } }, @{l = 'cancelCycles'; e = { $_.cancelCycles } }
-                                $alertDetail | Table -Name 'Alerts' -List -ColumnWidths 20, 80
+                        foreach ($s in $Options.AlertSeverityFilter) {
+                        Section -Name "$s Alerts" -Style Heading3 {
+                        foreach ($a in $alerts | where {$_.states.severity -eq $s}) {
+                                Paragraph -Name "Alert: $($a.name)" -Style Heading3
+                                BlankLine
+                                $alertDetail = $a | Select-Object @{l = 'Name'; e = { $_.name } }, @{l = 'ID'; e = { $_.id } }, @{l = 'description'; e = { $_.description } }, @{l = 'Severity'; e = { $_.states.severity } }, @{l = 'adapterKindKey'; e = { $_.adapterKindKey } }, @{l = 'resourceKindKey'; e = { $_.resourceKindKey } }, @{l = 'waitCycles'; e = { $_.waitCycles } }, @{l = 'cancelCycles'; e = { $_.cancelCycles } }
+                                $alertDetail | Sort-Object -Property name| Table -Name 'Alerts' -List -ColumnWidths 20, 80
+                                BlankLine
 
                                 if ($InfoLevel.Alerts -ge 2) {
                                     $symp = $a.states.'base-symptom-set'.symptomDefinitionIds
@@ -289,8 +303,8 @@ function Invoke-AsBuiltReport.VMware.vROps {
                                         $sympHashTable = @()
                                         $symDef = $(getSymptomDefinitions -resthost $vropshost -credential $Credential -symptomdefinitionid $s).symptomDefinitions
                                         if ($symDef.state.condition.type -contains 'CONDITION_MESSAGE_EVENT' ) {
-                                            Section -Style Heading4 -Name "Symptom: $($symDef.name)" {
-
+                                                Paragraph -Name Symptom -Style Heading3
+                                                BlankLine
                                                 $sympHashTable += [PSCustomObject]@{
                                                     'Name' = $symDef.name
                                                     'Id' = $symDef.Id
@@ -304,10 +318,12 @@ function Invoke-AsBuiltReport.VMware.vROps {
                                                     'Operator' = $symDef.state.condition.operator
                                                 }
                                                 $sympHashTable | Table -Name 'Symptoms' -List -ColumnWidths 20, 80
-                                            }
+                                                BlankLine
                                         } elseif ($symDef.state.condition.type -contains 'CONDITION_HT' ) {
 
-                                            Section -Style Heading4 -Name "Symptom: $($symDef.name)" {
+                                                Paragraph -Name Symptom -Style Heading3
+                                                BlankLine
+
                                                 $sympHashTable += [PSCustomObject]@{
                                                     'Name' = $symDef.name
                                                     'Id' = $symDef.Id
@@ -325,10 +341,12 @@ function Invoke-AsBuiltReport.VMware.vROps {
                                                     'Threshold Type' = $symDef.state.condition.thresholdType
                                                 }
                                                 $sympHashTable | Table -Name 'Symptoms' -List -ColumnWidths 20, 80
-                                            } 
+                                                BlankLine
                                         } elseif ($symDef.state.condition.type -contains 'CONDITION_PROPERTY_STRING' ) {
 
-                                            Section -Style Heading4 -Name "Symptom: $($symDef.name)" {
+                                                Paragraph -Name Symptom -Style Heading3
+                                                BlankLine
+
                                                 $sympHashTable += [PSCustomObject]@{
                                                     'Name' = $symDef.name
                                                     'Id' = $symDef.Id
@@ -344,10 +362,12 @@ function Invoke-AsBuiltReport.VMware.vROps {
                                                     'Threshold Type' = $symDef.state.condition.thresholdType
                                                 }
                                                 $sympHashTable | Table -Name 'Symptoms' -List -ColumnWidths 20, 80
-                                            }
+                                                BlankLine
                                         } elseif ($symDef.state.condition.type -contains 'CONDITION_FAULT' ) {
 
-                                            Section -Style Heading4 -Name "Symptom: $($symDef.name)" {
+                                                Paragraph -Name Symptom -Style Heading3
+                                                BlankLine
+
                                                 $sympHashTable += [PSCustomObject]@{
                                                     'Name' = $symDef.name
                                                     'Id' = $symDef.Id
@@ -360,10 +380,12 @@ function Invoke-AsBuiltReport.VMware.vROps {
                                                     'Fault Key' = $symDef.state.condition.faultKey
                                                 }
                                                 $sympHashTable | Table -Name 'Symptoms' -List -ColumnWidths 20, 80
-                                            }
+                                                BlankLine
                                         } elseif ($symDef.state.condition.type -contains 'CONDITION_PROPERTY_NUMERIC' ) {
 
-                                            Section -Style Heading4 -Name "Symptom: $($symDef.name)" {
+                                                Paragraph -Name Symptom -Style Heading3
+                                                BlankLine
+
                                                 $sympHashTable += [PSCustomObject]@{
                                                     'Name' = $symDef.name
                                                     'Id' = $symDef.Id
@@ -379,13 +401,13 @@ function Invoke-AsBuiltReport.VMware.vROps {
                                                     'Threshold Type' = $symDef.state.condition.thresholdType
                                                 }
                                                 $sympHashTable | Table -Name 'Symptoms' -List -ColumnWidths 20, 80
-
-                                            }
+                                                BlankLine
                                         } 
                                     }
                                 }
-                            }
                         }
+                    }
+                    }
                     }
                 }
             }
