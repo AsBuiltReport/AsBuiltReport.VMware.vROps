@@ -6,22 +6,23 @@
     },
     "Options": {
         "AuthSource": "local",
-        "AlertFilter": "*"
+        "AlertFilter": "*",
+        "AlertSeverityFilter": ["Critical", "Immediate", "Information", "Warning", "Auto"]
     },
     "HealthCheck": {},
     "InfoLevel": {
         "_comment_": "0 = Disabled, 1 = Summary, 2 = Informative, 3 = Detailed",
-        "GlobalSettings": 0,
-        "Authentication": 0,
-        "Roles": 0,
-        "Groups": 0,
-        "Users": 0,
-        "Adapters": 0,
-        "RemoteCollectors": 0,
-        "Alerts": 2,
-        "SuperMetrics": 0,
-        "ServiceStatus": 0,
-        "CustomGroups": 0,
-        "Reports": 0
+        "GlobalSettings": 1,
+        "Authentication": 1,
+        "Roles": 1,
+        "Groups": 3,
+        "Users": 2,
+        "Adapters": 1,
+        "RemoteCollectors": 3,
+        "Alerts": 0,
+        "SuperMetrics": 1,
+        "ServiceStatus": 1,
+        "CustomGroups": 1,
+        "Reports": 1
     }
 }
