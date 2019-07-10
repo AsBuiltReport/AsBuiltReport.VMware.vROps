@@ -69,17 +69,18 @@ The **InfoLevel** sub-schema allows configuration of each section of the report 
 
 | Schema | Sub-Schema | Default Setting |
 | ------ | ---------- | --------------- |
-| InfoLevel | Authentication | 3
-| InfoLevel | Roles | 3
-| InfoLevel | Groups | 3
-| InfoLevel | Users | 3
-| InfoLevel | Adapters | 3
-| InfoLevel | RemoteCollectors | 3
-| InfoLevel | Alerts | 3
-| InfoLevel | Symptoms | 3
-| InfoLevel | SuperMetrics | 3
-| InfoLevel | ServiceStatus | 3
-| InfoLevel | CustomGroups | 3
+| InfoLevel | GlobalSettings | 1
+| InfoLevel | Authentication | 1
+| InfoLevel | Roles | 1
+| InfoLevel | Groups | 2
+| InfoLevel | Users | 0
+| InfoLevel | Adapters | 1
+| InfoLevel | RemoteCollectors | 1
+| InfoLevel | Alerts | 2
+| InfoLevel | SuperMetrics | 1
+| InfoLevel | ServiceStatus | 1
+| InfoLevel | CustomGroups | 1
+| InfoLevel | Reports | 1
 
 There are 4 levels (0-3) of detail granularity for each section as follows;
 
