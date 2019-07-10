@@ -129,55 +129,39 @@ function Invoke-AsBuiltReport.VMware.vROps {
                         foreach ($g in $groups | Where-Object { !($_.authSourceId) }) {
                             Paragraph -Style Heading3 -Name 'System Groups' 
                                 $groupsSystem = $g | Select-Object @{l = 'Name'; e = { $_.name } }, @{l = 'Description'; e = { $_.description } }, @{l = 'Roles'; e = { $_.roleNames } }
-                                $groupsSystem | Table -Name 'System Groups'
+                                $groupsSystem | Table -Name 'System Groups' -List -ColumnWidths 15, 85
                                 BlankLine
-                                if ($InfoLevel.Groups -ge 3) {
                                     Paragraph -Style Heading3 -Name 'Users'
                                     BlankLine
                                         $usersInGroup = @()
-                                        foreach ($c in $g.userIds) {
-                                            $usersInGroup+= $users | Where-Object { $_.id -eq $c } | Select-Object @{l = 'Username'; e = { $_.username } }, @{l = 'First Name'; e = { $_.firstName } }, @{l = 'Last Name'; e = { $_.lastName } }, @{l = 'Distinguished Name'; e = { $_.distinguishedName } }
-                                        }
-                                        $usersInGroup | Table -Name 'Users'
-                                        BlankLine
+                                                                                if ($g.userIds){
 
-                                } else {
-                                    Paragraph -Style Heading3 -Name 'Users' 
-                                        $usersInGroup = @()
                                         foreach ($c in $g.userIds) {
-                                            $usersInGroup = $users | Where-Object { $_.id -contains $c } | Select-Object @{l = 'Username'; e = { $_.username } }, @{l = 'First Name'; e = { $_.firstName } }, @{l = 'Last Name'; e = { $_.lastName } }
+                                            $usersInGroup += $users | Where-Object { $_.id -eq $c } | Select-Object @{l = 'Username'; e = { $_.username } }, @{l = 'First Name'; e = { $_.firstName } }, @{l = 'Last Name'; e = { $_.lastName } }
                                         }
-                                        $usersInGroup | Table -Name 'Users'
+                                                                                
+                                        $usersInGroup | Table -Name 'Users in System Groups'
                                         BlankLine
+                                                                                }
 
-                                }
                         }
                             foreach ($g in $groups | Where-Object { $_.authSourceId }) {
                                 Paragraph -Style Heading3 -Name 'Imported Groups' 
                                     $groupsSystem = $g | Select-Object @{l = 'Name'; e = { $_.name } }, @{l = 'Description'; e = { $_.description } }, @{l = 'Roles'; e = { $_.roleNames } }
-                                    $groupsSystem | Table -Name 'Imported Groups'
+                                    $groupsSystem | Table -Name  'Imported Groups' -List -ColumnWidths 15, 85
                                     BlankLine
-                                    if ($InfoLevel.Groups -ge 3) {
                                         Paragraph -Style Heading3 -Name 'Users'
                                         BlankLine
                                         $usersInGroup = @()
+                                        if ($g.userIds){
                                             foreach ($c in $g.userIds) {
-                                                $usersInGroup = $users | Where-Object { $_.id -eq $c } | Select-Object @{l = 'Username'; e = { $_.username } }, @{l = 'First Name'; e = { $_.firstName } }, @{l = 'Last Name'; e = { $_.lastName } }, @{l = 'Distinguished Name'; e = { $_.distinguishedName } }
+                                                $usersInGroup += $users | Where-Object { $_.id -eq $c } | Select-Object @{l = 'Username'; e = { $_.username } }, @{l = 'First Name'; e = { $_.firstName } }, @{l = 'Last Name'; e = { $_.lastName } }
                                             }
-                                            $usersInGroup | Table -Name 'Users'
+                                        
+                                            $usersInGroup | Table -Name 'Users in Imported Groups'
                                             BlankLine
-
-                                    } else {
-
-                                    Paragraph -Style Heading3 -Name 'Users'
-                                    BlankLine
-                                    $usersInGroup = @()
-                                        foreach ($c in $g.userIds) {
-                                            $usersInGroup = $users | Where-Object { $_.id -eq $c } | Select-Object @{l = 'Username'; e = { $_.username } }, @{l = 'First Name'; e = { $_.firstName } }, @{l = 'Last Name'; e = { $_.lastName } }
                                         }
-                                        $usersInGroup | Table -Name 'Users' -ColumnWidths 30, 35, 35
-                                        BlankLine
-                                }
+
                         }
                     }
                 }
@@ -192,13 +176,13 @@ function Invoke-AsBuiltReport.VMware.vROps {
                 Section -Style Heading2 -Name 'User Accounts' {
                     Paragraph -Style Heading3 -Name 'System Users' 
                         $systemUsers = $users | Where-Object { $_.distinguishedName -like '' } | Select-Object @{l = 'Username'; e = { $_.username } }, @{l = 'First Name'; e = { $_.firstName } }, @{l = 'Last Name'; e = { $_.lastName } }, @{l = 'Enabled'; e = { $_.enabled } }, @{l = 'Roles'; e = { $($_.rolenames) -join ', ' } }
-                        $systemUsers | Table -Name 'System Users'
+                        $systemUsers | Table -Name 'System Users' -List -ColumnWidths 15, 85
                         BlankLine
                     
                     if ($InfoLevel.Users -ge 2) {
                         Paragraph -Style Heading3 -Name 'Imported Users' 
                             $importedUsers = $users | Where-Object { $_.'distinguishedName' -notlike '' } | Select-Object @{l = 'Username'; e = { $_.username } }, @{l = 'First Name'; e = { $_.firstName } }, @{l = 'Last Name'; e = { $_.lastName } }, @{l = 'Distinguished Name'; e = { $_.distinguishedName } }, @{l = 'Enabled'; e = { $_.enabled } }
-                            $importedUsers | Table -Name 'Imported Users'
+                            $importedUsers | Table -Name 'Imported Users' -List -ColumnWidths 15, 85
                             BlankLine
                     }
                 }
