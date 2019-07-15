@@ -134,15 +134,13 @@ function Invoke-AsBuiltReport.VMware.vROps {
                                     Paragraph -Style Heading3 -Name 'Users'
                                     BlankLine
                                         $usersInGroup = @()
-                                                                                if ($g.userIds){
-
-                                        foreach ($c in $g.userIds) {
-                                            $usersInGroup += $users | Where-Object { $_.id -eq $c } | Select-Object @{l = 'Username'; e = { $_.username } }, @{l = 'First Name'; e = { $_.firstName } }, @{l = 'Last Name'; e = { $_.lastName } }
-                                        }
-                                                                                
+                                        if ($g.userIds){
+                                            foreach ($c in $g.userIds) {
+                                                $usersInGroup += $users | Where-Object { $_.id -eq $c } | Select-Object @{l = 'Username'; e = { $_.username } }, @{l = 'First Name'; e = { $_.firstName } }, @{l = 'Last Name'; e = { $_.lastName } }
+                                            }
                                         $usersInGroup | Table -Name 'Users in System Groups'
                                         BlankLine
-                                                                                }
+                                        }
 
                         }
                             foreach ($g in $groups | Where-Object { $_.authSourceId }) {
@@ -411,11 +409,13 @@ function Invoke-AsBuiltReport.VMware.vROps {
 
             #region Custom Groups
             if ($InfoLevel.CustomGroups -ge 1) {
-                $customGroups = $(getCustomGroups -resthost $vropshost -credential $Credential).values
                 if ($customGroups) {
-                    Section -Style Heading2 -Name 'Custom Groups' {
-                        $customGroups = $customGroups | Select-Object @{l = 'Name'; e = { $_.resourceKey.name } }, @{l = 'Adapter Kind'; e = { $_.resourceKey.adapterKindKey } }, @{l = 'Resource Kind'; e = { $_.resourceKey.resourceKindKey } }
-                        $customGroups | Table -Name "Custom Groups"
+                    $customGroups = $(getCustomGroups -resthost $vropshost -credential $Credential).values
+                    if ($customGroups) {
+                        Section -Style Heading2 -Name 'Custom Groups' {
+                            $customGroups = $customGroups | Select-Object @{l = 'Name'; e = { $_.resourceKey.name } }, @{l = 'Adapter Kind'; e = { $_.resourceKey.adapterKindKey } }, @{l = 'Resource Kind'; e = { $_.resourceKey.resourceKindKey } }
+                            $customGroups | Table -Name "Custom Groups"
+                        }
                     }
                 }
             }
