@@ -98,14 +98,14 @@ The **Healthcheck** sub-schema is used to toggle health checks on or off. Curren
 
 ## Examples 
 - Generate HTML & Word reports with Timestamp
-Generate a vROps As Built Report for vROps Server `vrops-01.corp.local` using specified credentials. Export report to HTML & DOC formats. Use default report style. Append timestamp to report filename. Save reports to `C:\Users\Tim\Documents`
+Generate a vROps As Built Report for vROps Server `vrops-01.corp.local` using specified credentials. Export report to HTML & DOC formats. Use default report style. Append timestamp to report filename. Save reports to `C:\Users\User\Documents`
 ```powershell
-New-AsBuiltReport -Report VMware.vROps -Target 'vrops-01.corp.local' -Username 'admin' -Password 'VMware1!' -Format Html,Word -OutputPath 'C:\Users\Tim\Documents' -Timestamp
+New-AsBuiltReport -Report VMware.vROps -Target 'vrops-01.corp.local' -Username 'admin' -Password 'VMware1!' -Format Html,Word -OutputPath 'C:\Users\User\Documents' -Timestamp
 ```
 - Generate HTML & Text reports with Health Checks
-Generate a vROps As Built Report for vROps Server `vrops-01.corp.local` using stored credentials. Export report to HTML & Text formats. Use default report style. Highlight environment issues within the report. Save reports to `C:\Users\Tim\Documents`
+Generate a vROps As Built Report for vROps Server `vrops-01.corp.local` using stored credentials. Export report to HTML & Text formats. Use default report style. Highlight environment issues within the report. Save reports to `C:\Users\User\Documents`
 ```powershell
-New-AsBuiltReport -Report VMware.vROps -Target 'vrops-01.corp.local' -Credential $Creds -Format Html,Text -OutputPath 'C:\Users\Tim\Documents' -EnableHealthCheck
+New-AsBuiltReport -Report VMware.vROps -Target 'vrops-01.corp.local' -Credential $Creds -Format Html,Text -OutputPath 'C:\Users\User\Documents' -EnableHealthCheck
 ```
 - Generate report with multiple vROps Servers using Custom Style
 Generate a single vROps As Built Report for vROps Servers `vrops-01.corp.local` and `vrops-02.corp.local` using specified credentials. Report exports to WORD format by default. Apply custom style to the report. Reports are saved to the user profile folder by default.
@@ -115,7 +115,7 @@ New-AsBuiltReport -Report VMware.vROps -Target 'vrops-01.corp.local','vrops-02.c
 - Generate HTML & Word reports, attach and send reports via e-mail
 Generate a vROps As Built Report for vROps Server `vrops-01.corp.local` using specified credentials. Export report to HTML & DOC formats. Use default report style. Reports are saved to the user profile folder by default. Attach and send reports via e-mail.
 ```powershell
-New-AsBuiltReport -Report VMware.vROps -Target 'vrops-01.corp.local' -Username 'admin' -Password 'VMware1!' -Format Html,Word -OutputPath C:\Users\Tim\Documents -SendEmail
+New-AsBuiltReport -Report VMware.vROps -Target 'vrops-01.corp.local' -Username 'admin' -Password 'VMware1!' -Format Html,Word -OutputPath C:\Users\User\Documents -SendEmail
 ```
 ## Report Samples
 
