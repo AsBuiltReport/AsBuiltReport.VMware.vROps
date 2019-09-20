@@ -46,6 +46,8 @@ function Invoke-AsBuiltReport.VMware.vROps {
     ###############################################################################################
     #                                       SCRIPT BODY                                           #
     ###############################################################################################
+    $TextInfo = (Get-Culture).TextInfo
+
 
     # Connect to vROps using supplied credentials
     foreach ($vropshost in $Target) {
@@ -129,7 +131,7 @@ function Invoke-AsBuiltReport.VMware.vROps {
                         foreach ($g in $groups | Where-Object { !($_.authSourceId) }) {
                             Paragraph -Style Heading3 -Name 'System Groups' 
                                 $groupsSystem = $g | Select-Object @{l = 'Name'; e = { $_.name } }, @{l = 'Description'; e = { $_.description } }, @{l = 'Roles'; e = { $_.roleNames } }
-                                $groupsSystem | Table -Name 'System Groups' -List -ColumnWidths 15, 85
+                                $groupsSystem | Table -Name 'System Groups' -List -ColumnWidths 20, 80
                                 BlankLine
                                     Paragraph -Style Heading3 -Name 'Users'
                                     BlankLine
@@ -146,7 +148,7 @@ function Invoke-AsBuiltReport.VMware.vROps {
                             foreach ($g in $groups | Where-Object { $_.authSourceId }) {
                                 Paragraph -Style Heading3 -Name 'Imported Groups' 
                                     $groupsSystem = $g | Select-Object @{l = 'Name'; e = { $_.name } }, @{l = 'Description'; e = { $_.description } }, @{l = 'Roles'; e = { $_.roleNames } }
-                                    $groupsSystem | Table -Name  'Imported Groups' -List -ColumnWidths 15, 85
+                                    $groupsSystem | Table -Name  'Imported Groups' -List -ColumnWidths 20, 80
                                     BlankLine
                                         Paragraph -Style Heading3 -Name 'Users'
                                         BlankLine
@@ -155,7 +157,6 @@ function Invoke-AsBuiltReport.VMware.vROps {
                                             foreach ($c in $g.userIds) {
                                                 $usersInGroup += $users | Where-Object { $_.id -eq $c } | Select-Object @{l = 'Username'; e = { $_.username } }, @{l = 'First Name'; e = { $_.firstName } }, @{l = 'Last Name'; e = { $_.lastName } }
                                             }
-                                        
                                             $usersInGroup | Table -Name 'Users in Imported Groups'
                                             BlankLine
                                         }
@@ -174,13 +175,13 @@ function Invoke-AsBuiltReport.VMware.vROps {
                 Section -Style Heading2 -Name 'User Accounts' {
                     Paragraph -Style Heading3 -Name 'System Users' 
                         $systemUsers = $users | Where-Object { $_.distinguishedName -like '' } | Select-Object @{l = 'Username'; e = { $_.username } }, @{l = 'First Name'; e = { $_.firstName } }, @{l = 'Last Name'; e = { $_.lastName } }, @{l = 'Enabled'; e = { $_.enabled } }, @{l = 'Roles'; e = { $($_.rolenames) -join ', ' } }
-                        $systemUsers | Table -Name 'System Users' -List -ColumnWidths 15, 85
+                        $systemUsers | Table -Name 'System Users' -List -ColumnWidths 20, 80
                         BlankLine
                     
                     if ($InfoLevel.Users -ge 2) {
                         Paragraph -Style Heading3 -Name 'Imported Users' 
                             $importedUsers = $users | Where-Object { $_.'distinguishedName' -notlike '' } | Select-Object @{l = 'Username'; e = { $_.username } }, @{l = 'First Name'; e = { $_.firstName } }, @{l = 'Last Name'; e = { $_.lastName } }, @{l = 'Distinguished Name'; e = { $_.distinguishedName } }, @{l = 'Enabled'; e = { $_.enabled } }
-                            $importedUsers | Table -Name 'Imported Users' -List -ColumnWidths 15, 85
+                            $importedUsers | Table -Name 'Imported Users' -List -ColumnWidths 20, 80
                             BlankLine
                     }
                 }
@@ -189,7 +190,7 @@ function Invoke-AsBuiltReport.VMware.vROps {
 
             #region Remote Collectors
             if ($InfoLevel.RemoteCollectors -ge 1) {
-                Section -Style Heading2 -Name 'Remote Collectors' {
+                Section -Style Heading2 -Name 'Cluster Management' {
                     $collectors = $(getCollectors -resthost $vropshost -credential $Credential).collector
                     $localNodes = $collectors | Where-Object { $_.local -like '*True*' }
                     $remoteCollectors = $collectors | Where-Object { $_.local -like '*False*' }
@@ -254,7 +255,7 @@ function Invoke-AsBuiltReport.VMware.vROps {
                                 foreach ($adapter in $AdapterInstances) {
                                     $rc = $collectors | Where-Object { $_.id -like $adapter.collectorId }
                                     $adapter = $adapter | Select-Object @{l = 'Name'; e = { $_.resourceKey.name } }, @{l = 'Resource Kind'; e = { $_.resourceKey.resourceKindKey } }, @{l = 'Description'; e = { $_.description } }, @{l = 'Message from Adapter'; e = { $_.messageFromAdapterInstance } }, @{l = 'Collector Node'; e = { $rc.name } }, @{l = 'Last Heartbeat'; e = { (convertEpoch -epochTime $_.lastHeartbeat) } }, @{l = 'Last Collected'; e = { (convertEpoch -epochTime $_.lastCollected) } }, @{l = 'Metrics Collected'; e = { $_.numberOfMetricsCollected } }, @{l = 'Resources Collected'; e = { $_.numberOfResourcesCollected } } 
-                                    $adapter | Table -Name 'Adapters' -List -ColumnWidths 15, 85
+                                    $adapter | Table -Name 'Adapters' -List -ColumnWidths 20, 80
                                     BlankLine
                                 }
                         }
@@ -275,7 +276,7 @@ function Invoke-AsBuiltReport.VMware.vROps {
                         foreach ($a in $alerts | where {$_.states.severity -eq $s}) {
                                 Paragraph -Name "Alert: $($a.name)" -Style Heading3
                                 BlankLine
-                                $alertDetail = $a | Select-Object @{l = 'Name'; e = { $_.name } }, @{l = 'ID'; e = { $_.id } }, @{l = 'description'; e = { $_.description } }, @{l = 'Severity'; e = { $_.states.severity } }, @{l = 'adapterKindKey'; e = { $_.adapterKindKey } }, @{l = 'resourceKindKey'; e = { $_.resourceKindKey } }, @{l = 'waitCycles'; e = { $_.waitCycles } }, @{l = 'cancelCycles'; e = { $_.cancelCycles } }
+                                $alertDetail = $a | Select-Object @{l = 'Name'; e = { $_.name } }, @{l = 'ID'; e = { $_.id } }, @{l = 'Description'; e = { $_.description } }, @{l = 'Severity'; e = { $TextInfo.ToTitleCase(($_.states.severity).ToLower()) } }, @{l = 'Adapter Kind Key'; e = { $TextInfo.ToTitleCase(($_.adapterKindKey).ToLower()) } }, @{l = 'Resource Kind Key'; e = { $_.resourceKindKey } }, @{l = 'Wait Cycles'; e = { $_.waitCycles } }, @{l = 'Cancel Cycles'; e = { $_.cancelCycles } }
                                 $alertDetail | Sort-Object -Property name| Table -Name 'Alerts' -List -ColumnWidths 20, 80
                                 BlankLine
 
@@ -283,24 +284,27 @@ function Invoke-AsBuiltReport.VMware.vROps {
                                     $symp = $a.states.'base-symptom-set'.symptomDefinitionIds
                                     foreach ($s in $symp) {
                                         $sympHashTable = @()
+
                                         $symDef = $(getSymptomDefinitions -resthost $vropshost -credential $Credential -symptomdefinitionid $s).symptomDefinitions
+
                                         if ($symDef.state.condition.type -contains 'CONDITION_MESSAGE_EVENT' ) {
                                                 Paragraph -Name Symptom -Style Heading3
                                                 BlankLine
                                                 $sympHashTable += [PSCustomObject]@{
                                                     'Name' = $symDef.name
                                                     'Id' = $symDef.Id
-                                                    'AdapterKindKey' = $symDef.adapterKindKey
+                                                    'AdapterKindKey' = $TextInfo.ToTitleCase(($symDef.adapterKindKey).ToLower())
                                                     'ResourceKindKey' = $symDef.resourceKindKey
                                                     'Wait Cycles' = $symDef.waitCycles
                                                     'Cancel Cycles' = $symDef.cancelCycles
-                                                    'Type' = $symDef.state.condition.type
+                                                    'Type' = $TextInfo.ToTitleCase(($symDef.state.condition.type).ToLower())
                                                     'Event Type' = $symDef.state.condition.eventType
                                                     'Message' = $symDef.state.condition.message
-                                                    'Operator' = $symDef.state.condition.operator
+                                                    'Operator' = $TextInfo.ToTitleCase(($symDef.state.condition.operator).ToLower())
                                                 }
                                                 $sympHashTable | Table -Name 'Symptoms' -List -ColumnWidths 20, 80
                                                 BlankLine
+
                                         } elseif ($symDef.state.condition.type -contains 'CONDITION_HT' ) {
 
                                                 Paragraph -Name Symptom -Style Heading3
@@ -309,21 +313,22 @@ function Invoke-AsBuiltReport.VMware.vROps {
                                                 $sympHashTable += [PSCustomObject]@{
                                                     'Name' = $symDef.name
                                                     'Id' = $symDef.Id
-                                                    'AdapterKindKey' = $symDef.adapterKindKey
+                                                    'AdapterKindKey' = $TextInfo.ToTitleCase(($symDef.adapterKindKey).ToLower())
                                                     'ResourceKindKey' = $symDef.resourceKindKey
                                                     'Wait Cycles' = $symDef.waitCycles
                                                     'Cancel Cycles' = $symDef.cancelCycles
-                                                    'Severity' = $symDef.state.severity
-                                                    'Type' = $symDef.state.condition.type
+                                                    'Severity' = $TextInfo.ToTitleCase(($symDef.state.severity).ToLower())
+                                                    'Type' = $TextInfo.ToTitleCase(($symDef.state.condition.type).ToLower())
                                                     'Key' = $symDef.state.condition.key
-                                                    'Operator' = $symDef.state.condition.operator
-                                                    'Value' = $symDef.state.condition.value
-                                                    'Value Type' = $symDef.state.condition.valueType
+                                                    'Operator' = $TextInfo.ToTitleCase(($symDef.state.condition.operator).ToLower())
+                                                    'Value' = $TextInfo.ToTitleCase(($symDef.state.condition.value).ToLower())
+                                                    'Value Type' = $TextInfo.ToTitleCase(($symDef.state.condition.valueType).ToLower())
                                                     'Instanced' = $symDef.state.condition.instanced
-                                                    'Threshold Type' = $symDef.state.condition.thresholdType
+                                                    'Threshold Type' = $TextInfo.ToTitleCase(($symDef.state.condition.thresholdType).ToLower())
                                                 }
                                                 $sympHashTable | Table -Name 'Symptoms' -List -ColumnWidths 20, 80
                                                 BlankLine
+
                                         } elseif ($symDef.state.condition.type -contains 'CONDITION_PROPERTY_STRING' ) {
 
                                                 Paragraph -Name Symptom -Style Heading3
@@ -332,37 +337,38 @@ function Invoke-AsBuiltReport.VMware.vROps {
                                                 $sympHashTable += [PSCustomObject]@{
                                                     'Name' = $symDef.name
                                                     'Id' = $symDef.Id
-                                                    'AdapterKindKey' = $symDef.adapterKindKey
+                                                    'AdapterKindKey' = $TextInfo.ToTitleCase(($symDef.adapterKindKey).ToLower())
                                                     'ResourceKindKey' = $symDef.resourceKindKey
                                                     'Wait Cycles' = $symDef.waitCycles
                                                     'Cancel Cycles' = $symDef.cancelCycles
-                                                    'Severity' = $symDef.state.severity
-                                                    'Type' = $symDef.state.condition.type
+                                                    'Severity' = $TextInfo.ToTitleCase(($symDef.state.severity).ToLower())
+                                                    'Type' = $TextInfo.ToTitleCase(($symDef.state.condition.type).ToLower())
                                                     'String Value' = $symDef.state.condition.stringValue
                                                     'Key' = $symDef.state.condition.key
-                                                    'Operator' = $symDef.state.condition.operator
-                                                    'Threshold Type' = $symDef.state.condition.thresholdType
+                                                    'Operator' = $TextInfo.ToTitleCase(($symDef.state.condition.operator).ToLower())
+                                                    'Threshold Type' = $TextInfo.ToTitleCase(($symDef.state.condition.thresholdType).ToLower())
                                                 }
                                                 $sympHashTable | Table -Name 'Symptoms' -List -ColumnWidths 20, 80
                                                 BlankLine
+
                                         } elseif ($symDef.state.condition.type -contains 'CONDITION_FAULT' ) {
 
                                                 Paragraph -Name Symptom -Style Heading3
                                                 BlankLine
-
                                                 $sympHashTable += [PSCustomObject]@{
                                                     'Name' = $symDef.name
                                                     'Id' = $symDef.Id
-                                                    'AdapterKindKey' = $symDef.adapterKindKey
+                                                    'AdapterKindKey' = $TextInfo.ToTitleCase(($symDef.adapterKindKey).ToLower())
                                                     'ResourceKindKey' = $symDef.resourceKindKey
                                                     'Wait Cycles' = $symDef.waitCycles
                                                     'Cancel Cycles' = $symDef.cancelCycles
-                                                    'Severity' = $symDef.state.severity
-                                                    'Type' = $symDef.state.condition.type
+                                                    'Severity' = $TextInfo.ToTitleCase(($symDef.state.severity).ToLower())
+                                                    'Type' = $TextInfo.ToTitleCase(($symDef.state.condition.type).ToLower())
                                                     'Fault Key' = $symDef.state.condition.faultKey
                                                 }
                                                 $sympHashTable | Table -Name 'Symptoms' -List -ColumnWidths 20, 80
                                                 BlankLine
+
                                         } elseif ($symDef.state.condition.type -contains 'CONDITION_PROPERTY_NUMERIC' ) {
 
                                                 Paragraph -Name Symptom -Style Heading3
@@ -371,12 +377,12 @@ function Invoke-AsBuiltReport.VMware.vROps {
                                                 $sympHashTable += [PSCustomObject]@{
                                                     'Name' = $symDef.name
                                                     'Id' = $symDef.Id
-                                                    'AdapterKindKey' = $symDef.adapterKindKey
+                                                    'AdapterKindKey' = $TextInfo.ToTitleCase(($symDef.adapterKindKey).ToLower())
                                                     'ResourceKindKey' = $symDef.resourceKindKey
                                                     'Wait Cycles' = $symDef.waitCycles
                                                     'Cancel Cycles' = $symDef.cancelCycles
-                                                    'Severity' = $symDef.state.severity
-                                                    'Type' = $symDef.state.condition.type
+                                                    'Severity' = $TextInfo.ToTitleCase(($symDef.state.severity).ToLower())
+                                                    'Type' = $TextInfo.ToTitleCase(($symDef.state.condition.type).ToLower())
                                                     'Value' = $symDef.state.condition.value
                                                     'Operator' = $symDef.state.condition.operator
                                                     'Key' = $symDef.state.condition.key
@@ -384,7 +390,7 @@ function Invoke-AsBuiltReport.VMware.vROps {
                                                 }
                                                 $sympHashTable | Table -Name 'Symptoms' -List -ColumnWidths 20, 80
                                                 BlankLine
-                                        } 
+                                        }
                                     }
                                 }
                         }
@@ -401,7 +407,7 @@ function Invoke-AsBuiltReport.VMware.vROps {
                 if ($superMetrics) {
                     Section -Style Heading2 -Name 'Super Metrics' {
                         $superMetrics = $superMetrics | Select-Object @{l = 'Name'; e = { $_.name } }, @{l = 'ID'; e = { $_.ID } }, @{l = 'Formula'; e = { $_.formula } }
-                        $superMetrics | Table -Name "Super Metrics" -List -ColumnWidths 15, 85
+                        $superMetrics | Table -Name "Super Metrics" -List -ColumnWidths 20, 80
                     }
                 }
             }
@@ -427,7 +433,7 @@ function Invoke-AsBuiltReport.VMware.vROps {
                 if ($reports) {
                     Section -Style Heading2 -Name 'Reports' {
                         $reports = $reports | Select-Object @{l = 'Name'; e = { $_.name } }, @{l = 'Description'; e = { $_.description } }, @{l = 'Owner'; e = { $_.owner } }, @{l = 'Subject'; e = { $_.subject -join ", " } }, @{l = 'Active'; e = { $_.active } }
-                        $reports | Table -Name "Reports" -List -ColumnWidths 15, 85
+                        $reports | Table -Name "Reports" -List -ColumnWidths 20, 80
                     }
                 }
             }
