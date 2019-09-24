@@ -120,13 +120,13 @@ New-AsBuiltReport -Report VMware.vROps -Target 'vrops-01.corp.local' -Username '
 ## Report Samples
 
 ### Authentication Configuration Table
-![](Samples/2019-06-12-21-03-25.png)
+![](Samples/2019-09-24-19-49-28.png)
 
 ### Alert & Symptom Configuration Table
-![](Samples/2019-06-12-21-07-26.png)
+![](Samples/2019-09-24-19-50-06.png)
 
 ### Super Metric Configuration Table
-![](Samples/2019-06-12-21-08-48.png)
+![](Samples/2019-09-24-19-50-38.png)
 
-### Custom Groups Configuration Table
-![](Samples/2019-06-12-21-09-39.png)
+### Cluster Management Table
+![](Samples/2019-09-24-19-51-43.png)
