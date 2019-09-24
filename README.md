@@ -72,8 +72,8 @@ The **InfoLevel** sub-schema allows configuration of each section of the report 
 | InfoLevel | GlobalSettings | 1
 | InfoLevel | Authentication | 1
 | InfoLevel | Roles | 1
-| InfoLevel | Groups | 2
-| InfoLevel | Users | 0
+| InfoLevel | Groups | 1
+| InfoLevel | Users | 1
 | InfoLevel | Adapters | 1
 | InfoLevel | RemoteCollectors | 1
 | InfoLevel | Alerts | 2
@@ -82,19 +82,15 @@ The **InfoLevel** sub-schema allows configuration of each section of the report 
 | InfoLevel | CustomGroups | 1
 | InfoLevel | Reports | 1
 
-There are 4 levels (0-3) of detail granularity for each section as follows;
+There are 3 levels (0-2) of detail granularity for each section as follows;
 
 | Setting | InfoLevel | Description |
 | ------- | ---- | ----------- |
 | 0 | Disabled | does not collect or display any information
-| 1 | Summary** | provides summarised information for a collection of objects
-| 2 | Informative | provides condensed, detailed information for a collection of objects
-| 3 | Detailed | provides detailed information for individual objects
+| 1 | Informative | provides summarised information for a collection of objects
+| 2 | Comprehensive | provides condensed, detailed information for a collection of objects**
 
-\*\* *future release*
-
-### Healthcheck
-The **Healthcheck** sub-schema is used to toggle health checks on or off. Currently no health checks are configured.
+** Note - Applying Comprehensive level to Users will cause report to detail all AD users in the groups imported to vROps which will significantly increase the report size.
 
 ## Examples 
 - Generate HTML & Word reports with Timestamp
