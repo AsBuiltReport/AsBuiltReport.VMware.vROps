@@ -69,17 +69,18 @@ The **InfoLevel** sub-schema allows configuration of each section of the report 
 
 | Schema | Sub-Schema | Default Setting |
 | ------ | ---------- | --------------- |
-| InfoLevel | Authentication | 3
-| InfoLevel | Roles | 3
-| InfoLevel | Groups | 3
-| InfoLevel | Users | 3
-| InfoLevel | Adapters | 3
-| InfoLevel | RemoteCollectors | 3
-| InfoLevel | Alerts | 3
-| InfoLevel | Symptoms | 3
-| InfoLevel | SuperMetrics | 3
-| InfoLevel | ServiceStatus | 3
-| InfoLevel | CustomGroups | 3
+| InfoLevel | GlobalSettings | 1
+| InfoLevel | Authentication | 1
+| InfoLevel | Roles | 1
+| InfoLevel | Groups | 2
+| InfoLevel | Users | 0
+| InfoLevel | Adapters | 1
+| InfoLevel | RemoteCollectors | 1
+| InfoLevel | Alerts | 2
+| InfoLevel | SuperMetrics | 1
+| InfoLevel | ServiceStatus | 1
+| InfoLevel | CustomGroups | 1
+| InfoLevel | Reports | 1
 
 There are 4 levels (0-3) of detail granularity for each section as follows;
 
@@ -97,14 +98,14 @@ The **Healthcheck** sub-schema is used to toggle health checks on or off. Curren
 
 ## Examples 
 - Generate HTML & Word reports with Timestamp
-Generate a vROps As Built Report for vROps Server `vrops-01.corp.local` using specified credentials. Export report to HTML & DOC formats. Use default report style. Append timestamp to report filename. Save reports to `C:\Users\Tim\Documents`
+Generate a vROps As Built Report for vROps Server `vrops-01.corp.local` using specified credentials. Export report to HTML & DOC formats. Use default report style. Append timestamp to report filename. Save reports to `C:\Users\User\Documents`
 ```powershell
-New-AsBuiltReport -Report VMware.vROps -Target 'vrops-01.corp.local' -Username 'admin' -Password 'VMware1!' -Format Html,Word -OutputPath 'C:\Users\Tim\Documents' -Timestamp
+New-AsBuiltReport -Report VMware.vROps -Target 'vrops-01.corp.local' -Username 'admin' -Password 'VMware1!' -Format Html,Word -OutputPath 'C:\Users\User\Documents' -Timestamp
 ```
 - Generate HTML & Text reports with Health Checks
-Generate a vROps As Built Report for vROps Server `vrops-01.corp.local` using stored credentials. Export report to HTML & Text formats. Use default report style. Highlight environment issues within the report. Save reports to `C:\Users\Tim\Documents`
+Generate a vROps As Built Report for vROps Server `vrops-01.corp.local` using stored credentials. Export report to HTML & Text formats. Use default report style. Highlight environment issues within the report. Save reports to `C:\Users\User\Documents`
 ```powershell
-New-AsBuiltReport -Report VMware.vROps -Target 'vrops-01.corp.local' -Credential $Creds -Format Html,Text -OutputPath 'C:\Users\Tim\Documents' -EnableHealthCheck
+New-AsBuiltReport -Report VMware.vROps -Target 'vrops-01.corp.local' -Credential $Creds -Format Html,Text -OutputPath 'C:\Users\User\Documents' -EnableHealthCheck
 ```
 - Generate report with multiple vROps Servers using Custom Style
 Generate a single vROps As Built Report for vROps Servers `vrops-01.corp.local` and `vrops-02.corp.local` using specified credentials. Report exports to WORD format by default. Apply custom style to the report. Reports are saved to the user profile folder by default.
@@ -114,18 +115,18 @@ New-AsBuiltReport -Report VMware.vROps -Target 'vrops-01.corp.local','vrops-02.c
 - Generate HTML & Word reports, attach and send reports via e-mail
 Generate a vROps As Built Report for vROps Server `vrops-01.corp.local` using specified credentials. Export report to HTML & DOC formats. Use default report style. Reports are saved to the user profile folder by default. Attach and send reports via e-mail.
 ```powershell
-New-AsBuiltReport -Report VMware.vROps -Target 'vrops-01.corp.local' -Username 'admin' -Password 'VMware1!' -Format Html,Word -OutputPath C:\Users\Tim\Documents -SendEmail
+New-AsBuiltReport -Report VMware.vROps -Target 'vrops-01.corp.local' -Username 'admin' -Password 'VMware1!' -Format Html,Word -OutputPath C:\Users\User\Documents -SendEmail
 ```
 ## Report Samples
 
 ### Authentication Configuration Table
-![](Samples/2019-06-12-21-03-25.png)
+![](Samples/2019-09-24-19-49-28.png)
 
 ### Alert & Symptom Configuration Table
-![](Samples/2019-06-12-21-07-26.png)
+![](Samples/2019-09-24-19-50-06.png)
 
 ### Super Metric Configuration Table
-![](Samples/2019-06-12-21-08-48.png)
+![](Samples/2019-09-24-19-50-38.png)
 
-### Custom Groups Configuration Table
-![](Samples/2019-06-12-21-09-39.png)
+### Cluster Management Table
+![](Samples/2019-09-24-19-51-43.png)
